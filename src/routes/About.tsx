@@ -1,22 +1,17 @@
 import Button from '@mui/material/Button';
-import { Questions } from '../Questions';
+import { Answers } from '../components/Questions';
 
-export const About = ({ questions, correctTable, retry, select }:
+export const About = ({ questions, correctTable, retry, gohome }:
     {
         questions: { English: string, Japanese: string, answer: string }[], correctTable: number[],
         retry: () => void
-        select: () => void
+        gohome: () => void
     }) => {
 
-    const updateCorrectTable = (idx: number, status: number) => {
-        console.log(`About: updateCorrectTable: ${idx} ${status}`);
-    }
-
     return (<>
+        <Answers questions={questions} correctTable={correctTable} />
         <hr></hr>
-        <Questions questions={questions} correctTable={correctTable} updateCorrectTable={updateCorrectTable} showAnswer={true}/>
-        <hr></hr>
-        <Button onClick={retry}>RETRY</Button>
-        <Button onClick={select}>SELECT</Button>
+        <Button autoFocus={true} onClick={retry}>RETRY</Button>
+        <Button onClick={gohome}>HOME</Button>
     </>)
 }

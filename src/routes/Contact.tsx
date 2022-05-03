@@ -1,4 +1,4 @@
-import { Questions } from '../Questions';
+import { Questions } from '../components/Questions';
 import Button from '@mui/material/Button';
 
 //----------------------------------------
@@ -10,7 +10,6 @@ export const Contact = ({ questions, correctTable, updateCorrectTable, finished 
     }) => {
 
     return (<>
-        <hr></hr>
         <Questions questions={questions} correctTable={correctTable} updateCorrectTable={updateCorrectTable} />
         <hr></hr>
         <Button onClick={finished}>FINISHED</Button>

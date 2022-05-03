@@ -1,13 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { Routes, Route } from 'react-router-dom';
-import { Home } from './routes/Home';
-import { About } from './routes/About';
-import { Contact } from './routes/Contact';
+
+import { SelectQuestions } from './SelectQuestions';
+import { Home } from '../routes/Home';
+import { About } from '../routes/About';
+import { Contact } from '../routes/Contact';
 
 //----------------------------------------
-import data from './data.json';
+import data from '../data.json';
 
 const QUESTION_KAZU: number = 10;
 
@@ -82,7 +83,7 @@ export const App = () => {
         navigate('/contact');
     }
 
-    const select = () => {
+    const gohome = () => {
         navigate('/');
     }
 
@@ -92,10 +93,12 @@ export const App = () => {
     }
 
     return (<>
+        <SelectQuestions onSelect={selected} />
+        <hr></hr>
         <Routes>
             <Route path="/" element={<Home selected={selected}/>} />
             <Route path="/contact" element={<Contact questions={questions} correctTable={correctTable} updateCorrectTable={updateCorrectTable} finished={finished}/>} />
-            <Route path="/about" element={<About questions={questions} correctTable={correctTable} retry={retry} select={select}/>} />
+            <Route path="/about" element={<About questions={questions} correctTable={correctTable} retry={retry} gohome={gohome}/>} />
         </Routes>
         <hr></hr>
     </>);
