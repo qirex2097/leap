@@ -1,9 +1,12 @@
 import React from 'react';
-import Select from '@mui/material/Select';
-import { SelectChangeEvent } from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
-import { Questions } from './Questions';
+import { useNavigate } from 'react-router-dom';
+
+import { Routes, Route } from 'react-router-dom';
+import { Home } from './routes/Home';
+import { About } from './routes/About';
+import { Contact } from './routes/Contact';
+
+//----------------------------------------
 import data from './data.json';
 
 const QUESTION_KAZU: number = 10;
@@ -41,63 +44,46 @@ const selectQuestions = (pages: number[], kazu: number = 10): { questionNo: numb
     }
     return questions;
 }
-
-const SelectQuestions = ({ onSelect }: { onSelect: (startNo: number, endNo: number) => void}) => {
-    const [startNo, setStartNo] = React.useState(0);
-    const [endNo, setEndNo] = React.useState(data.length - 1);
-
-    const handleStartNoChanged = (e: SelectChangeEvent<number>) => {
-        const newStartNo = e.target.value as number;
-        setStartNo(newStartNo);
-        if (endNo < newStartNo) {
-            setEndNo(newStartNo);
-        }
-    }
-    const handleEndNoChanged = (e: SelectChangeEvent<number>) => {
-        const newEndNo = e.target.value as number;
-        setEndNo(newEndNo);
-        if (newEndNo < startNo) {
-            setStartNo(newEndNo);
-        }
-    }
-
-    return (<>
-        <Select
-            value={startNo}
-            label="start"
-            size="small"
-            onChange={handleStartNoChanged}
-        >
-            {data.map((v, i) => {
-                const moji = `${v.start}`;
-                return <MenuItem key={i} value={i}>{moji}</MenuItem>
-            })}
-        </Select>
-        <> - </>
-        <Select
-            value={endNo}
-            label="end"
-            size="small"
-            onChange={handleEndNoChanged}
-        >
-            {data.map((v, i) => {
-                const moji = `${v.end}`;
-                return <MenuItem key={i} value={i}>{moji}</MenuItem>
-            })}
-        </Select>
-        <Button onClick={() => { onSelect(startNo, endNo) }}>SELECT</Button>
-    </>)
-}
+//----------------------------------------
 
 export const App = () => {
+    const [startNo, setStartNo] = React.useState<number>(0);
+    const [endNo, setEndNo] = React.useState<number>(0);
     const [questions, setQuestions] = React.useState<{ English: string, Japanese: string, answer: string }[]>([]);
     const [correctTable, setCorrectTable] = React.useState<number[]>([]);
+    const navigate = useNavigate();
 
-    const questionSelected = (startNo: number, endNo: number) => {
+    const selected = (startNo: number = -1, endNo: number =-1) => {
+        if (0 <= startNo) {
+            setStartNo(startNo);
+        }
+        if (0 <= endNo) {
+            setEndNo(endNo);
+        }
         const sections: number[] = new Array(endNo - startNo + 1).fill(startNo).map((v, i) => v + i);
         const newQuestions = selectQuestions(sections, QUESTION_KAZU);
         setQuestions(newQuestions);
         setCorrectTable(new Array(newQuestions.length).fill(0));
+        navigate('/contact');
+    }
+
+    const finished = () => {
+        const newCorrectTable: number[] = correctTable.map((v, i) => { return v ? v : -1 });
+        setCorrectTable(newCorrectTable);
+
+        navigate('/about');
+    }
+
+    const retry = () => {
+        const sections: number[] = new Array(endNo - startNo + 1).fill(startNo).map((v, i) => v + i);
+        const newQuestions = selectQuestions(sections, QUESTION_KAZU);
+        setQuestions(newQuestions);
+        setCorrectTable(new Array(newQuestions.length).fill(0));
+        navigate('/contact');
+    }
+
+    const select = () => {
+        navigate('/');
     }
 
     const updateCorrectTable = (idx: number, status: number) => {
@@ -106,8 +92,11 @@ export const App = () => {
     }
 
     return (<>
-        <SelectQuestions onSelect={questionSelected}/>
+        <Routes>
+            <Route path="/" element={<Home selected={selected}/>} />
+            <Route path="/contact" element={<Contact questions={questions} correctTable={correctTable} updateCorrectTable={updateCorrectTable} finished={finished}/>} />
+            <Route path="/about" element={<About questions={questions} correctTable={correctTable} retry={retry} select={select}/>} />
+        </Routes>
         <hr></hr>
-        <Questions questions={questions} correctTable={correctTable} updateCorrectTable={updateCorrectTable}/>
     </>);
 }
