@@ -20,7 +20,7 @@ const getAnswer = (English: string, word: string): string => {
     return answer;
 }
 
-export const selectQuestions = (pages: number[], kazu: number = 10): QuestionData[] => {
+export const selectQuestions = (pages: number[]): QuestionData[] => {
     let candidateQuestions: QuestionData[] = [];
     for (const p of pages) {
         const section: string = `${data[p].start} - ${data[p].end}`;
@@ -31,7 +31,8 @@ export const selectQuestions = (pages: number[], kazu: number = 10): QuestionDat
         }
     }
 
-    const questionKazu = kazu || Math.min(candidateQuestions.length, 50);
+//    const questionKazu = kazu || Math.min(candidateQuestions.length, 50);
+    const questionKazu = candidateQuestions.length;
 
     let allQuestionNumbers: number[] = Array(candidateQuestions.length).fill(0).map((v, i) => i);
     let questionNumbers: number[] = [];

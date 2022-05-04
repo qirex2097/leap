@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 
 import data from '../data.json';
 
-export const SelectQuestions = ({ onSelect }: { onSelect: (startNo: number, endNo: number, isAll: boolean) => void }) => {
+export const SelectQuestions = ({ onSelect }: { onSelect: (startNo: number, endNo: number) => void }) => {
     const [startNo, setStartNo] = React.useState(0);
     const [endNo, setEndNo] = React.useState(data.length - 1);
 
@@ -49,7 +49,6 @@ export const SelectQuestions = ({ onSelect }: { onSelect: (startNo: number, endN
                 return <MenuItem key={i} value={i}>{moji}</MenuItem>
             })}
         </Select>
-        <Button onClick={() => { onSelect(startNo, endNo, false) }}>SELECT</Button>
-        <Button onClick={() => { onSelect(startNo, endNo, true) }}>ALL</Button>
+        <Button onClick={() => { onSelect(startNo, endNo) }}>START</Button>
     </>)
 }

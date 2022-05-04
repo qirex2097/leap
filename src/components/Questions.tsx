@@ -63,6 +63,7 @@ export const Questions = ({ questions, updateCorrectWrong }:
         questions: QuestionData[]
         updateCorrectWrong: (idx: number, status: number) => void
     }) => {
+
     return (<>
         {questions.map((v, i) => {
             return (<Question key={i} {...v}
