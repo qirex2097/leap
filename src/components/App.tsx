@@ -16,7 +16,11 @@ export const App = () => {
     const [questions, setQuestions] = React.useState<QuestionData[]>([]);
     const navigate = useNavigate();
 
-    const selected = (startNo: number = -1, endNo: number =-1) => {
+    const selected = (startNo: number = -1, endNo: number =-1, isAll: boolean = false) => {
+        let kazu = QUESTION_KAZU
+        if (isAll) {
+            kazu = 0
+        }
         if (0 <= startNo) {
             setStartNo(startNo);
         }
@@ -24,7 +28,7 @@ export const App = () => {
             setEndNo(endNo);
         }
         const sections: number[] = new Array(endNo - startNo + 1).fill(startNo).map((v, i) => v + i);
-        const newQuestions = selectQuestions(sections, QUESTION_KAZU);
+        const newQuestions = selectQuestions(sections, kazu);
         setQuestions(newQuestions);
         navigate('/question');
     }
@@ -63,6 +67,5 @@ export const App = () => {
             <Route path="/question" element={<Question questions={questions} updateCorrectWrong={updateCorrectWrong} finished={finished}/>} />
             <Route path="/answer" element={<About questions={questions} retry={retry} gohome={gohome}/>} />
         </Routes>
-        <hr></hr>
     </>);
 }

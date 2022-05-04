@@ -6,6 +6,7 @@ export type QuestionData = {
     Japanese: string
     answer: string
     correctOrWrong: number
+    wordNo: string
 }
 
 const getAnswer = (English: string, word: string): string => {
@@ -20,14 +21,21 @@ const getAnswer = (English: string, word: string): string => {
 }
 
 export const selectQuestions = (pages: number[], kazu: number = 10): QuestionData[] => {
-    let candidateQuestions: { English: string, Japanese: string, word: string }[] = []
+    let candidateQuestions: QuestionData[] = [];
     for (const p of pages) {
+        const section: string = `${data[p].start} - ${data[p].end}`;
         if (p < 0 || data.length <= p) continue;
-        candidateQuestions = [...candidateQuestions, ...data[p].sentences]
+        for (const s of data[p].sentences) {
+            const answer = getAnswer(s.English, s.word)
+            candidateQuestions.push({ ...s, answer: answer, correctOrWrong: 0, wordNo: section });
+        }
     }
+
+    const questionKazu = kazu || Math.min(candidateQuestions.length, 50);
+
     let allQuestionNumbers: number[] = Array(candidateQuestions.length).fill(0).map((v, i) => i);
     let questionNumbers: number[] = [];
-    while (questionNumbers.length < kazu && questionNumbers.length < candidateQuestions.length) {
+    while (questionNumbers.length < questionKazu && questionNumbers.length < candidateQuestions.length) {
         const candidateNumbers = allQuestionNumbers.filter((v) => !questionNumbers.includes(v));
         const questionNumber = candidateNumbers[Math.floor(Math.random() * candidateNumbers.length)];
         questionNumbers.push(questionNumber);
@@ -35,9 +43,7 @@ export const selectQuestions = (pages: number[], kazu: number = 10): QuestionDat
 
     let questions: QuestionData[] = [];
     for (const q of questionNumbers) {
-        const sentence = candidateQuestions[q];
-        const answer = getAnswer(sentence.English, sentence.word);
-        questions.push({ correctOrWrong: 0, ...candidateQuestions[q], answer });
+        questions.push(candidateQuestions[q]);
     }
     return questions;
 }

@@ -18,7 +18,7 @@ const Question = ({ English, Japanese, answer, correctOrWrong, setCorrectWrong }
         if (e.target.value.length === 0) return;
 
         const answer_moji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || '';
-        if (e.target.value.toLowerCase() == answer_moji.toLowerCase()) {
+        if (e.target.value.toLowerCase() === answer_moji.toLowerCase()) {
             setCorrectWrong(1);
         } else {
             setCorrectWrong(-1);
@@ -63,8 +63,6 @@ export const Questions = ({ questions, updateCorrectWrong }:
         questions: QuestionData[]
         updateCorrectWrong: (idx: number, status: number) => void
     }) => {
-    const kazu = questions.length;
-
     return (<>
         {questions.map((v, i) => {
             return (<Question key={i} {...v}
@@ -86,6 +84,7 @@ export const Answers = ({ questions }:
 
     const wrongQuestions: QuestionData[] = questions.filter((v, i) => {
         if (questions[i].correctOrWrong <= 0) return v;
+        else return ""
     })
 
     return (<><h3>{correctNum} / {questions.length}</h3>
@@ -100,7 +99,7 @@ export const Answers = ({ questions }:
             });
 
             return (<div key={i}>
-                <div>{v.Japanese}</div>
+                <div>{v.Japanese} / {v.wordNo}</div>
                 <div>{description}</div>
                 <p></p>
             </div>)
