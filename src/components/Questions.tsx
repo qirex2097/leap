@@ -6,10 +6,10 @@ import Clear from '@mui/icons-material/Clear';
 
 import { QuestionData } from '../questions';
 
-const Question = ({ English, Japanese, answer, isCorrect, setCorrectWrong }
+const Question = ({ English, Japanese, answer, correctOrWrong, setCorrectWrong }
     : {
         English: string, Japanese: string, answer: string,
-        isCorrect: number,
+        correctOrWrong: number,
         setCorrectWrong: (value: number) => void
     }) => {
     const separater: string = answer.match(/[?.,:;]$/)?.[0] || ' ';
@@ -29,9 +29,9 @@ const Question = ({ English, Japanese, answer, isCorrect, setCorrectWrong }
     }
 
     let startAdornment: JSX.Element;
-    if (0 < isCorrect) {
+    if (0 < correctOrWrong) {
         startAdornment = <InputAdorment position="start"><Check /></InputAdorment>
-    } else if (isCorrect < 0) {
+    } else if (correctOrWrong < 0) {
         startAdornment = <InputAdorment position="start"><Clear /></InputAdorment>
     }
 
@@ -68,7 +68,7 @@ export const Questions = ({ questions, updateCorrectWrong }:
     return (<>
         {questions.map((v, i) => {
             return (<Question key={i} {...v}
-                isCorrect={questions[i].correctOrWrong}
+                correctOrWrong={questions[i].correctOrWrong}
                 setCorrectWrong={(value: number) => updateCorrectWrong(i, value)}
             />);
         })}
@@ -84,11 +84,24 @@ export const Answers = ({ questions }:
         return prev;
     }, 0);
 
+    const wrongQuestions: QuestionData[] = questions.filter((v, i) => {
+        if (questions[i].correctOrWrong <= 0) return v;
+    })
+
     return (<><h3>{correctNum} / {questions.length}</h3>
-        {questions.map((v, i) => {
-            if (questions[i].correctOrWrong <= 0) return (<div key={i}>
+        {wrongQuestions.map((v, i) => {
+            const description = v.English.split(' ').map((e, i) => {
+                if (e.search(v.answer) >= 0) {
+                    return (<span key={i} style={{borderBottom: "solid 3px red"}}>
+                        {v.answer}&nbsp;</span>);
+                } else {
+                    return (<span key={i}>{e}&nbsp;</span>);
+                }
+            });
+
+            return (<div key={i}>
                 <div>{v.Japanese}</div>
-                <div>{v.English}</div>
+                <div>{description}</div>
                 <p></p>
             </div>)
         })}
