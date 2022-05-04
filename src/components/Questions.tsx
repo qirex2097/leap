@@ -4,6 +4,8 @@ import InputAdorment from '@mui/material/InputAdornment'
 import Check from '@mui/icons-material/Check';
 import Clear from '@mui/icons-material/Clear';
 
+import { QuestionData } from '../questions';
+
 const Question = ({ English, Japanese, answer, isCorrect, setCorrectWrong }
     : {
         English: string, Japanese: string, answer: string,
@@ -56,37 +58,39 @@ const Question = ({ English, Japanese, answer, isCorrect, setCorrectWrong }
 }
 
 
-export const Questions = ({ questions, correctTable, updateCorrectTable }:
+export const Questions = ({ questions, updateCorrectWrong }:
     {
-        questions: { English: string, Japanese: string, answer: string }[]
-        correctTable: number[]
-        updateCorrectTable: (idx: number, status: number) => void
+        questions: QuestionData[]
+        updateCorrectWrong: (idx: number, status: number) => void
     }) => {
     const kazu = questions.length;
 
     return (<>
         {questions.map((v, i) => {
             return (<Question key={i} {...v}
-                isCorrect={correctTable[i]}
-                setCorrectWrong={(value: number) => updateCorrectTable(i, value)}
+                isCorrect={questions[i].correctOrWrong}
+                setCorrectWrong={(value: number) => updateCorrectWrong(i, value)}
             />);
         })}
     </>);
 }
 
-export const Answers = ({ questions, correctTable }:
+export const Answers = ({ questions }:
     {
-        questions: { English: string, Japanese: string, answer: string }[]
-        correctTable: number[]
+        questions: QuestionData[]
     }) => {
+    const correctNum: number = questions.reduce((prev, e) => {
+        if (e.correctOrWrong > 0) prev += 1;
+        return prev;
+    }, 0);
 
-    return (<><h2>Answers</h2>
+    return (<><h3>{correctNum} / {questions.length}</h3>
         {questions.map((v, i) => {
-            if (correctTable[i] < 0) return (<>
+            if (questions[i].correctOrWrong <= 0) return (<div key={i}>
                 <div>{v.Japanese}</div>
                 <div>{v.English}</div>
                 <p></p>
-            </>)
+            </div>)
         })}
     </>)
 }
