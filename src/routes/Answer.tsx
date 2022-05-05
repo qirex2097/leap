@@ -3,15 +3,15 @@ import { Answers } from '../components/Questions';
 
 import {QuestionData} from '../questions';
 
-export const Answer = ({ questions, retry }:
+export const Answer = ({ questions, goOn }:
     {
         questions: QuestionData[]
-        retry: () => void
+        goOn: () => void
     }) => {
 
     return (<>
         <Answers questions={questions} />
         <hr></hr>
-        <Button autoFocus={true} onClick={retry}>CONTINUE</Button>
+        <Button autoFocus={true} onClick={goOn}>CONTINUE</Button>
     </>)
 }

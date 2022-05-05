@@ -12,41 +12,42 @@ import { Result } from '../routes/Result';
 const QUESTION_KAZU: number = 10;
 
 export const App = () => {
-    const [startNo, setStartNo] = React.useState<number>(0);
-    const [endNo, setEndNo] = React.useState<number>(0);
     const [questions, setQuestions] = React.useState<QuestionData[]>([]);
     const [questionNo, setQuestionNo] = React.useState<number>(0);
     const navigate = useNavigate();
 
-    const selected = (startNo: number = -1, endNo: number = -1) => {
-        if (0 <= startNo) {
-            setStartNo(startNo);
-        }
-        if (0 <= endNo) {
-            setEndNo(endNo);
-        }
+    const selected = (startNo: number, endNo: number) => {
         const sections: number[] = new Array(endNo - startNo + 1).fill(startNo).map((v, i) => v + i);
         const newQuestions = selectQuestions(sections);
         setQuestions(newQuestions);
         setQuestionNo(0);
         navigate('/question');
     }
+    const retry = (retryList: number[]) => {
+        if (retryList.length === 0) {
+            navigate('/');
+        } else {
+            const retryQuestions: QuestionData[] = questions.filter((v, i) => {
+                if (retryList.includes(i)) return v;
+            })
+            for (const q of retryQuestions) {
+                q.correctOrWrong = 0;
+            }
+            setQuestions(retryQuestions);
+            setQuestionNo(0);
+            navigate('/question');
+        }
+    }
 
     const finished = () => {
         if (questionNo + QUESTION_KAZU > questions.length) {
-            console.log(`FINISHED!`);
             navigate('/finished');
         } else {
             navigate('/answer');
         }
     }
 
-    const retry = () => {
-        /*
-        const sections: number[] = new Array(endNo - startNo + 1).fill(startNo).map((v, i) => v + i);
-        const newQuestions = selectQuestions(sections);
-        setQuestions(newQuestions);
-        */
+    const goOn = () => {
         if (questionNo >= questions.length) {
             navigate('/');
         } else {
@@ -54,11 +55,7 @@ export const App = () => {
             navigate('/question');
         }
     }
-
-    const gohome = () => {
-        navigate('/');
-    }
-    const result = () => {
+    const goResult = () => {
         navigate('/result')
     }
 
@@ -82,9 +79,9 @@ export const App = () => {
             <Route path="/" element={<Home selected={selected} />} />
             <Route path="/leap" element={<Home selected={selected} />} />
             <Route path="/question" element={<Question questions={currentQuestions} updateCorrectWrong={updateCorrectWrong} finished={finished} />} />
-            <Route path="/answer" element={<Answer questions={currentQuestions} retry={retry} />} />
-            <Route path="/finished" element={<Answer questions={currentQuestions} retry={result} />} />
-            <Route path="/result" element={<Result questions={questions} />} />
+            <Route path="/answer" element={<Answer questions={currentQuestions} goOn={goOn} />} />
+            <Route path="/finished" element={<Answer questions={currentQuestions} goOn={goResult} />} />
+            <Route path="/result" element={<Result questions={questions} retry={retry} />} />
         </Routes>
     </>);
 }
