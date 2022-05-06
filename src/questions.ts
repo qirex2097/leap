@@ -1,6 +1,17 @@
 //----------------------------------------
 import data from './data.json';
 
+type SectionData = {
+    start: number
+    end: number
+    sentences: 
+        {
+            English: string,
+            Japanese: string,
+            word: string
+        }[]
+}
+
 export type QuestionData = {
     English: string
     Japanese: string
@@ -8,6 +19,23 @@ export type QuestionData = {
     correctOrWrong: number
     wordNo: string
 }
+
+//----------------------------------------
+
+let currentData: SectionData[] = data;
+
+export const sectionKazu: number = currentData.length;
+export const getSectionInfo = (): { start: number, end: number }[] => {
+    const sectionInfo: { start: number, end: number }[] = [];
+
+    for (let i = 0; i < currentData.length; i++) {
+        sectionInfo.push({ start: currentData[i].start, end: currentData[i].end })
+    }
+
+    return sectionInfo;
+}
+
+//----------------------------------------
 
 const getAnswer = (English: string, word: string): string => {
     let answer: string = "";
@@ -23,15 +51,14 @@ const getAnswer = (English: string, word: string): string => {
 export const selectQuestions = (pages: number[]): QuestionData[] => {
     let candidateQuestions: QuestionData[] = [];
     for (const p of pages) {
-        const section: string = `${data[p].start} - ${data[p].end}`;
-        if (p < 0 || data.length <= p) continue;
-        for (const s of data[p].sentences) {
+        const section: string = `${currentData[p].start} - ${currentData[p].end}`;
+        if (p < 0 || currentData.length <= p) continue;
+        for (const s of currentData[p].sentences) {
             const answer = getAnswer(s.English, s.word)
             candidateQuestions.push({ ...s, answer: answer, correctOrWrong: 0, wordNo: section });
         }
     }
 
-//    const questionKazu = kazu || Math.min(candidateQuestions.length, 50);
     const questionKazu = candidateQuestions.length;
 
     let allQuestionNumbers: number[] = Array(candidateQuestions.length).fill(0).map((v, i) => i);

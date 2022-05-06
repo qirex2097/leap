@@ -4,11 +4,11 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 
-import data from '../data.json';
+import { sectionKazu, getSectionInfo } from '../questions';
 
 export const SelectQuestions = ({ onSelect }: { onSelect: (startNo: number, endNo: number) => void }) => {
     const [startNo, setStartNo] = React.useState(0);
-    const [endNo, setEndNo] = React.useState(data.length - 1);
+    const [endNo, setEndNo] = React.useState(sectionKazu - 1);
 
     const handleStartNoChanged = (e: SelectChangeEvent<number>) => {
         const newStartNo = e.target.value as number;
@@ -25,6 +25,8 @@ export const SelectQuestions = ({ onSelect }: { onSelect: (startNo: number, endN
         }
     }
 
+    const sections: {start: number, end: number}[] = getSectionInfo();
+
     return (<>
         <Select
             value={startNo}
@@ -32,7 +34,7 @@ export const SelectQuestions = ({ onSelect }: { onSelect: (startNo: number, endN
             size="small"
             onChange={handleStartNoChanged}
         >
-            {data.map((v, i) => {
+            {sections.map((v, i) => {
                 const moji = `${v.start}`;
                 return <MenuItem key={i} value={i}>{moji}</MenuItem>
             })}
@@ -44,7 +46,7 @@ export const SelectQuestions = ({ onSelect }: { onSelect: (startNo: number, endN
             size="small"
             onChange={handleEndNoChanged}
         >
-            {data.map((v, i) => {
+            {sections.map((v, i) => {
                 const moji = `${v.end}`;
                 return <MenuItem key={i} value={i}>{moji}</MenuItem>
             })}
