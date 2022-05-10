@@ -23,50 +23,19 @@ export type QuestionData = {
 
 //----------------------------------------
 
-let currentData: SectionData[] = data;
-let loadedSectionData: SectionData[] = [];
+let currentData: SectionData[] = [...data];
 let selectedSections: number[] = [];
-
-export const getPresetSectionKazu = (): number => {
-    return data.length;
-}
-
-export const getPresetSectionInfo = (): { start: number, end: number }[] => {
-    const sectionInfo: { start: number, end: number }[] = [];
-
-    for (let i = 0; i < data.length; i++) {
-        sectionInfo.push({ start: data[i].start, end: data[i].end })
-    }
-
-    return sectionInfo;
-}
 
 export const getCurrentSectionData = (): SectionData[] => {
     return currentData;
 }
 
-export const isCurrentDataLoadedData = (): boolean => {
-    return currentData !== data;
-}
-
-export const setPresetSectionData = (): void => {
-    currentData = data;
-}
-//----------
-export const getLoadedSectionData = (): SectionData[] => {
-    return loadedSectionData;
+export const addSectionData = (newSectionData: SectionData) => {
+    currentData = [...currentData, newSectionData];
 }
 
 export const resetLoadedSectionData = () => {
-    loadedSectionData = [];
-}
-
-export const addLoadedSectionData = (newSectionData: SectionData) => {
-    loadedSectionData = [...loadedSectionData, newSectionData];
-}
-
-export const setLoadedSectionData = (): void => {
-    currentData = loadedSectionData
+    currentData = [...data];
 }
 
 export const getSelectedSections = (): number[] => {

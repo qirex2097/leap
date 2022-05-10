@@ -1,22 +1,18 @@
 import React from 'react';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import UploadFile from '@mui/icons-material/UploadFile';
 import { useDropzone } from "react-dropzone";
-import { SectionData, addLoadedSectionData, getLoadedSectionData, setLoadedSectionData, resetLoadedSectionData, getSelectedSections } from "../questions";
+import { SectionData, getSelectedSections, getCurrentSectionData } from "../questions";
 
-export const DropQuestions = ({ questionStart }: {
+export const DropQuestions = ({ questionStart, onLoad }: {
     questionStart: (sections: number[]) => void
+    onLoad: (newSectionData: SectionData) => void
 }) => {
-    const [checkedTable, setCheckedTable] = React.useState<boolean[]>(Array(getLoadedSectionData().length).fill(false).map((v, i) => {
+    const [checkedTable, setCheckedTable] = React.useState<boolean[]>(Array(getCurrentSectionData().length).fill(false).map((v, i) => {
         if (getSelectedSections().includes(i)) return true; else return false;
     }));
-    const [sectionData, setSectionData] = React.useState<SectionData[]>(getLoadedSectionData());
 
     const updateCheckedTable = (idx: number, checked: boolean) => {
-        let newCheckedTable: boolean[] = Array(getLoadedSectionData().length).fill(true).map((v, i) => {
+        let newCheckedTable: boolean[] = Array(getCurrentSectionData().length).fill(true).map((v, i) => {
             if (idx === i) {
                 return checked;
             } else if (i < checkedTable.length) {
@@ -41,20 +37,11 @@ export const DropQuestions = ({ questionStart }: {
                         filename: f.name,
                         sentences: JSON.parse(reader.result as string)
                     }
-                    addLoadedSectionData(newSectionData);
-                    setSectionData(getLoadedSectionData());
-                    if (checkedTable.length < getLoadedSectionData().length) {
-                        setCheckedTable([...checkedTable, ...Array(getLoadedSectionData().length - checkedTable.length).fill(false)]);
-                    }
+                    onLoad(newSectionData);
                 }
                 reader.readAsText(f);
             }
         }, [checkedTable])
-
-    const reset = () => {
-        resetLoadedSectionData();
-        setSectionData([])
-    }
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
     const centeringStyles = { position: "absolute", top: "50%", left: "50%", transform: "translateY(-50%) translateX(-50%)" }
@@ -77,6 +64,9 @@ export const DropQuestions = ({ questionStart }: {
                 }} />
             )}
         </div>
+    </>
+}
+/*
         <FormGroup>{
             sectionData.map((v, i) => {
                 return <FormControlLabel
@@ -89,18 +79,23 @@ export const DropQuestions = ({ questionStart }: {
                     label={v.filename} />
             })
         }</FormGroup>
+        */
+        /*
         <Button onClick={() => {
             const sections: number[] = [];
-            for (let i = 0; i < sectionData.length; i++) {
+            for (let i = 0; i < getCurrentSectionData.length; i++) {
                 if (checkedTable[i]) {
                     sections.push(i);
                 }
             }
             if (sections.length > 0) {
-                setLoadedSectionData();
                 questionStart(sections as number[]);
             }
         }}>START</Button>
-        <Button onClick={reset}>RESET</Button>
-    </>
-}
+        */
+       /*
+                    addLoadedSectionData(newSectionData);
+                    if (checkedTable.length < getCurrentSectionData().length) {
+                        setCheckedTable([...checkedTable, ...Array(getCurrentSectionData().length - checkedTable.length).fill(false)]);
+                    }
+                    */

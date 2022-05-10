@@ -23,6 +23,8 @@ export const App = () => {
     }
     const retry = (retryList: number[]) => {
         if (retryList.length === 0) {
+            setQuestions([]);
+            setQuestionNo(0);
             navigate('/');
         } else {
             const retryQuestions: QuestionData[] = questions.filter((v, i) => retryList.includes(i))
@@ -55,6 +57,8 @@ export const App = () => {
         navigate('/result')
     }
     const goHome = () => {
+        setQuestions([]);
+        setQuestionNo(0);
         navigate('/')
     }
 
@@ -72,11 +76,12 @@ export const App = () => {
     const currentQuestions: QuestionData[] = questions.slice(questionNo, questionNo + QUESTION_KAZU);
 
     return (<>
-        <SelectQuestions onSelect={start} goHome={goHome} />
+        <SelectQuestions goHome={goHome} questionKazu={questions.length}
+            questionStartNo={questionNo} questionEndNo={questionNo + currentQuestions.length - 1} />
         <hr></hr>
         <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/leap" element={<Home />} />
+            <Route path="/" element={<Home start={start} />} />
+            <Route path="/leap" element={<Home start={start} />} />
             <Route path="/question" element={<Question questions={currentQuestions} updateCorrectWrong={updateCorrectWrong} finished={finished} />} />
             <Route path="/answer" element={<Answer questions={currentQuestions} goOn={goOn} />} />
             <Route path="/finished" element={<Answer questions={currentQuestions} goOn={goResult} />} />
