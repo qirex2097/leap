@@ -1,8 +1,4 @@
 import Button from '@mui/material/Button';
-import { QuestionData, selectQuestions } from '../questions';
-
-let localStartNo: number;
-let localEndNo: number;
 
 export const SelectQuestions = ({ goHome, questionKazu, questionStartNo, questionEndNo }: {
     goHome: () => void

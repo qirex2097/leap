@@ -31,7 +31,7 @@ export const getCurrentSectionData = (): SectionData[] => {
 }
 
 export const addSectionData = (newSectionData: SectionData) => {
-    currentData = [...currentData, newSectionData];
+    currentData = [...currentData, newSectionData].sort((a, b) => a.start - b.start);
 }
 
 export const resetLoadedSectionData = () => {

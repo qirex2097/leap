@@ -3,15 +3,15 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { SectionData, QuestionData, getCurrentSectionData, addSectionData, resetLoadedSectionData, getSelectedSections, selectQuestions } from "../questions";
+import { SectionData, QuestionData, getCurrentSectionData, addSectionData, getSelectedSections, selectQuestions } from "../questions";
 import { DropQuestions } from '../components/DropQuestions';
 
-export const Home = ({start}: {start: (newQuestionData: QuestionData[]) => void}): JSX.Element => {
+export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => void }): JSX.Element => {
     const sectionData: SectionData[] = getCurrentSectionData();
     const [checkedTable, setCheckedTable] = React.useState<boolean[]>(sectionData.map((v, i) => {
-        if (getSelectedSections().includes(i)) { 
-            return true; 
-        } else { 
+        if (getSelectedSections().includes(i)) {
+            return true;
+        } else {
             return false;
         }
     }));
@@ -26,14 +26,20 @@ export const Home = ({start}: {start: (newQuestionData: QuestionData[]) => void}
             else return -1;
         }).filter(v => v >= 0);
 
+        console.log(`quesionStart: ${selectedSections.length} ${selectedSections}`);
         start(selectQuestions(selectedSections));
     }
 
     const handleLoad = (newSectionData: SectionData): void => {
-        const newLabel: string = `${newSectionData.start}-${newSectionData.end}`
         addSectionData(newSectionData);
-        newLabels = [...newLabels, newLabel];
+
+        newLabels = getCurrentSectionData().map((v, i) => {
+            return `${v.start}-${v.end}`
+        })
         setLabels(newLabels);
+
+        const newCheckedTable = [...checkedTable, false];
+        setCheckedTable(newCheckedTable);
     }
 
     const handleChange = (idx: number, checked: boolean) => {
