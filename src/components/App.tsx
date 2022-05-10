@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 
-import { selectQuestions, QuestionData } from '../questions';
+import { QuestionData, randomlySortQuestions } from '../questions';
 import { SelectQuestions } from './SelectQuestions';
 import { Home } from '../routes/Home';
 import { Answer } from '../routes/Answer';
@@ -16,9 +16,7 @@ export const App = () => {
     const [questionNo, setQuestionNo] = React.useState<number>(0);
     const navigate = useNavigate();
 
-    const selected = (startNo: number, endNo: number) => {
-        const sections: number[] = new Array(endNo - startNo + 1).fill(startNo).map((v, i) => v + i);
-        const newQuestions = selectQuestions(sections);
+    const start = (newQuestions: QuestionData[]) => {
         setQuestions(newQuestions);
         setQuestionNo(0);
         navigate('/question');
@@ -27,20 +25,18 @@ export const App = () => {
         if (retryList.length === 0) {
             navigate('/');
         } else {
-            const retryQuestions: QuestionData[] = questions.filter((v, i) => {
-                if (retryList.includes(i)) return v;
-            })
+            const retryQuestions: QuestionData[] = questions.filter((v, i) => retryList.includes(i))
             for (const q of retryQuestions) {
                 q.correctOrWrong = 0;
             }
-            setQuestions(retryQuestions);
+            setQuestions(randomlySortQuestions(retryQuestions));
             setQuestionNo(0);
             navigate('/question');
         }
     }
 
     const finished = () => {
-        if (questionNo + QUESTION_KAZU > questions.length) {
+        if (questionNo + QUESTION_KAZU >= questions.length) {
             navigate('/finished');
         } else {
             navigate('/answer');
@@ -58,6 +54,9 @@ export const App = () => {
     const goResult = () => {
         navigate('/result')
     }
+    const goHome = () => {
+        navigate('/')
+    }
 
     const updateCorrectWrong = (idx: number, status: number) => {
         const newQuestions: QuestionData[] = questions.map((v, i) => {
@@ -73,11 +72,11 @@ export const App = () => {
     const currentQuestions: QuestionData[] = questions.slice(questionNo, questionNo + QUESTION_KAZU);
 
     return (<>
-        <SelectQuestions onSelect={selected} />
+        <SelectQuestions onSelect={start} goHome={goHome} />
         <hr></hr>
         <Routes>
-            <Route path="/" element={<Home selected={selected} />} />
-            <Route path="/leap" element={<Home selected={selected} />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/leap" element={<Home />} />
             <Route path="/question" element={<Question questions={currentQuestions} updateCorrectWrong={updateCorrectWrong} finished={finished} />} />
             <Route path="/answer" element={<Answer questions={currentQuestions} goOn={goOn} />} />
             <Route path="/finished" element={<Answer questions={currentQuestions} goOn={goResult} />} />

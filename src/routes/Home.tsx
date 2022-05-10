@@ -1,5 +1,3 @@
-export const Home = ({selected}: {selected: (s: number, e: number) => void}) => {
-    return (<>
-    <h1>Home</h1>
-    </>);
+export const Home = (): JSX.Element => {
+    return (<><h2>Home</h2></>);
 }
