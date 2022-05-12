@@ -60,6 +60,6 @@ export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => vo
         }</Grid>
         <Button onClick={questionStart}>START</Button>
         <Button onClick={reset}>RESET</Button>
-        <DropQuestions questionStart={questionStart} onLoad={handleLoad} />
+        <DropQuestions onLoad={handleLoad} />
     </>);
 }
