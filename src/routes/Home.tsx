@@ -3,7 +3,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { SectionData, QuestionData, getCurrentSectionData, addSectionData, selectQuestions, getSelectedSections } from "../questions";
+import { SectionData, QuestionData, getCurrentSectionData, selectQuestions, getSelectedSections } from "../questions";
 import { DropQuestions } from '../components/DropQuestions';
 
 type Label = {
@@ -26,9 +26,7 @@ export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => vo
         start(selectQuestions(selectedSections));
     }
 
-    const handleLoad = (newSectionData: SectionData): void => {
-        addSectionData(newSectionData);
-
+    const updateLabels = (): void => {
         newLabels = getCurrentSectionData().map((v, i) => {
             return { label: `${v.start}-${v.end}`, checked: false }
         })
@@ -60,6 +58,6 @@ export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => vo
         }</Grid>
         <Button onClick={questionStart}>START</Button>
         <Button onClick={reset}>RESET</Button>
-        <DropQuestions onLoad={handleLoad} />
+        <DropQuestions onLoad={updateLabels} />
     </>);
 }

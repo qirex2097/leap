@@ -9,7 +9,6 @@ export const SelectQuestions = ({ goHome, questionKazu, questionStartNo, questio
     const moji: string = `${questionStartNo + 1} - ${questionEndNo + 1} / ${questionKazu}`
 
     return (<>
-        {}
         {questionKazu > 0 && moji}
         <Button onClick={() => {
             goHome();
