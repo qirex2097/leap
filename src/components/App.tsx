@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 
 import { QuestionData, randomlySortQuestions } from '../questions';
-import { SelectQuestions } from './SelectQuestions';
+import { Header } from './Header';
 import { Home } from '../routes/Home';
 import { Answer } from '../routes/Answer';
 import { Question } from '../routes/Question';
@@ -76,7 +76,7 @@ export const App = () => {
     const currentQuestions: QuestionData[] = questions.slice(questionNo, questionNo + QUESTION_KAZU);
 
     return (<>
-        <SelectQuestions goHome={goHome} questionKazu={questions.length}
+        <Header goHome={goHome} questionKazu={questions.length}
             questionStartNo={questionNo} questionEndNo={questionNo + currentQuestions.length - 1} />
         <hr></hr>
         <Routes>

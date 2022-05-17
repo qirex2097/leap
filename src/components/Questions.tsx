@@ -41,7 +41,7 @@ const Question = ({ English, Japanese, answer, correctOrWrong, setCorrectWrong }
                 <Input type="text" color='secondary'
                     onBlur={handleBlur}
                     onFocus={handleFocus}
-                    style={{ width: answer.length * 12 + 24 }}
+                    style={{ width: answer.length * 16 + 24 }}
                     startAdornment={startAdornment}
                 />
                 {separater}</span>);

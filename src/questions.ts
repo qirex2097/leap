@@ -41,6 +41,10 @@ export const resetLoadedSectionData = () => {
 export const getSelectedSections = (): number[] => {
     return selectedSections;
 }
+
+export const getLastQuestionNo = (): number => {
+    return currentData[currentData.length - 1].end
+}
 //----------------------------------------
 
 const getAnswer = (English: string, word: string): string => {

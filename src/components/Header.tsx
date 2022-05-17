@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button';
 
-export const SelectQuestions = ({ goHome, questionKazu, questionStartNo, questionEndNo }: {
+export const Header = ({ goHome, questionKazu, questionStartNo, questionEndNo }: {
     goHome: () => void
     questionKazu: number
     questionStartNo: number
@@ -9,9 +9,9 @@ export const SelectQuestions = ({ goHome, questionKazu, questionStartNo, questio
     const moji: string = `${questionStartNo + 1} - ${questionEndNo + 1} / ${questionKazu}`
 
     return (<>
-        {questionKazu > 0 && moji}
         <Button onClick={() => {
             goHome();
         }}>HOME</Button>
+        {questionKazu > 0 && moji}
     </>)
 }
