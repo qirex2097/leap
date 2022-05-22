@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/leap/static/js/main.45d51174.js",
+    "main.js": "/leap/static/js/main.8eae51ad.js",
     "index.html": "/leap/index.html",
-    "main.45d51174.js.map": "/leap/static/js/main.45d51174.js.map"
+    "main.8eae51ad.js.map": "/leap/static/js/main.8eae51ad.js.map"
   },
   "entrypoints": [
-    "static/js/main.45d51174.js"
+    "static/js/main.8eae51ad.js"
   ]
 }
