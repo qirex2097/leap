@@ -1,16 +1,17 @@
 //----------------------------------------
 import data from './data.json';
 
+type Sentence = {
+    English: string,
+    Japanese: string,
+    word: string,
+}
+
 export type SectionData = {
     start: number
     end: number
     filename?: string
-    sentences:
-    {
-        English: string,
-        Japanese: string,
-        word: string
-    }[]
+    sentences: Sentence[]
 }
 
 export type QuestionData = {
@@ -30,10 +31,6 @@ export const getCurrentSectionData = (): SectionData[] => {
     return currentData;
 }
 
-export const addSectionData = (newSectionData: SectionData) => {
-    currentData = [...currentData, newSectionData].sort((a, b) => a.start - b.start);
-}
-
 export const resetLoadedSectionData = () => {
     currentData = [...data];
 }
@@ -44,6 +41,41 @@ export const getSelectedSections = (): number[] => {
 
 export const getLastQuestionNo = (): number => {
     return currentData[currentData.length - 1].end
+}
+
+export const addSectionData = (sentences: Sentence[], start: number, end: number, filename: string = "") => {
+    const newStart = start > 0 ? end : getLastQuestionNo() + 1;
+    const newEnd = end > 0 ? end : newStart + sentences.length;
+    const newSectionData: SectionData = {
+        start: newStart,
+        end: newEnd,
+        filename: filename,
+        sentences: sentences
+    }
+
+    currentData = [...currentData, newSectionData].sort((a, b) => a.start - b.start); //addSectionData(newSectionData);
+}
+
+export const addSectionDataFromFile = (filename: string, result: string) => {
+        const start: number = filename.match(/[0-9]+-/) ? parseInt(filename.match(/([0-9]+)-/)?.[1]!) : 0;
+        const end: number = filename.match(/-[0-9]+/) ? parseInt(filename.match(/-([0-9]+)/)?.[1]!) : 0;
+        let sentences: { English: string, Japanese: string, word: string }[] = [];
+
+        if (filename.search(/\.json$/) >= 0) {
+            sentences = JSON.parse(result);
+        } else if (filename.search(/\.txt$/) >= 0) {
+            const lines: string[] = (result).split(/\r\n|\n|\r/).filter((v) => v.length > 0);
+            for (let i = 0; i < lines.length; i += 3) {
+                const sentence: { English: string, Japanese: string, word: string } = {
+                    English: lines[i + 0],
+                    Japanese: lines[i + 1],
+                    word: lines[i + 2]
+                }
+                sentences.push(sentence);
+            }
+        }
+
+        addSectionData(sentences, start, end, filename);
 }
 //----------------------------------------
 
