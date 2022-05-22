@@ -44,7 +44,7 @@ export const getLastQuestionNo = (): number => {
 }
 
 export const addSectionData = (sentences: Sentence[], start: number, end: number, filename: string = "") => {
-    const newStart = start > 0 ? end : getLastQuestionNo() + 1;
+    const newStart = start > 0 ? start : getLastQuestionNo() + 1;
     const newEnd = end > 0 ? end : newStart + sentences.length;
     const newSectionData: SectionData = {
         start: newStart,
