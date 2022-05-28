@@ -66,7 +66,7 @@ export const addSectionDataFromFile = (filename: string, result: string) => {
         } else if (filename.search(/\.txt$/) >= 0) {
             const lines: string[] = (result).split(/\r\n|\n|\r/).filter((v) => v.length > 0);
             for (let i = 0; i < lines.length; i += 3) {
-                const sentence: { English: string, Japanese: string, word: string } = {
+                const sentence: Sentence = {
                     English: lines[i + 0],
                     Japanese: lines[i + 1],
                     word: lines[i + 2]

@@ -9,6 +9,14 @@ export const Answer = ({ questions, goOn }:
         goOn: () => void
     }) => {
 
+    const correctNum = questions.reduce((prev, current) => {
+        if (current.correctOrWrong > 0) prev += 1;
+        return prev;
+    }, 0);
+    if (correctNum === questions.length) {
+        goOn();
+    }
+
     return (<>
         <Answers questions={questions} />
         <hr></hr>
