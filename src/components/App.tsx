@@ -59,7 +59,7 @@ export const App = () => {
     const goHome = () => {
         setQuestions([]);
         setQuestionNo(0);
-        navigate('/')
+        navigate('/leap')
     }
 
     const updateCorrectWrong = (idx: number, status: number) => {
