@@ -47,7 +47,7 @@ export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => vo
         setLabels(labels.map((v) => { return { ...v, checked: false } }));
     }
 
-    const yoko: number = window.innerWidth > 750 ? 8 : 6;
+    const yoko: number = window.innerWidth > 750 ? 8 : 4;
     return (<>
         <Grid container spacing={0}>{
             newLabels.map((v, i) => {
