@@ -47,10 +47,11 @@ export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => vo
         setLabels(labels.map((v) => { return { ...v, checked: false } }));
     }
 
+    const yoko: number = window.innerWidth > 750 ? 8 : 6;
     return (<>
         <Grid container spacing={0}>{
             newLabels.map((v, i) => {
-                return <Grid item key={i} xs={1.5}><FormControlLabel
+                return <Grid item key={i} xs={12 / yoko}><FormControlLabel
                     key={i}
                     checked={v.checked}
                     control={<Checkbox />}
