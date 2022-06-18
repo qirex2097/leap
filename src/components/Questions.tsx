@@ -15,35 +15,43 @@ const Question = ({ English, Japanese, answer, correctOrWrong, setCorrectWrong }
     }) => {
     const separater: string = answer.match(/[?.,:;]$/)?.[0] || ' ';
     const answer_moji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || '';
+    const NONE: number = 0;
+    const CORRECT: number = 1;
+    const WRONG: number = -1;
+    const HINT: number = -2;
+    const isHintUsed: boolean = correctOrWrong === HINT;
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        if (e.target.value.length === 0 || correctOrWrong !== 0) return;
+        if (e.target.value.length === 0) return;
 
-        if (e.target.value.toLowerCase() === answer_moji.toLowerCase()) {
-            setCorrectWrong(1);
+        if (isHintUsed) {
+            e.target.value = answer_moji;
+        } else if (e.target.value.toLowerCase() === answer_moji.toLowerCase()) {
+            e.target.value = answer_moji;
+            setCorrectWrong(CORRECT);
         } else {
-            setCorrectWrong(-1);
+            setCorrectWrong(WRONG);
         }
     }
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-        setCorrectWrong(0);
+        if (isHintUsed) return;
+
+        setCorrectWrong(NONE);
     }
     const handleChange = (e: React.FocusEvent<HTMLInputElement>) => {
         if (e.target.value === ' ') {
             e.target.value = answer_moji;
-            setCorrectWrong(-2);
+            setCorrectWrong(HINT);
         }
     }
 
     let startAdornment: JSX.Element;
-    if (0 < correctOrWrong) {
+    if (correctOrWrong === CORRECT) {
         startAdornment = <InputAdorment position="start"><Check /></InputAdorment>
-    } else if (correctOrWrong < 0) {
-        if (correctOrWrong === -1) {
-            startAdornment = <InputAdorment position="start"><Clear /></InputAdorment>
-        } else {
-            startAdornment = <InputAdorment position="start"><Call /></InputAdorment>
-        }
+    } else if (correctOrWrong === WRONG) {
+        startAdornment = <InputAdorment position="start"><Clear /></InputAdorment>
+    } else if (correctOrWrong === HINT) {
+        startAdornment = <InputAdorment position="start"><Call /></InputAdorment>
     }
 
     const description = English.split(' ').map((v, i) => {
