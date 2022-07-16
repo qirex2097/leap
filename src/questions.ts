@@ -57,25 +57,29 @@ export const addSectionData = (sentences: Sentence[], start: number, end: number
 }
 
 export const addSectionDataFromFile = (filename: string, result: string) => {
-        const start: number = filename.match(/[0-9]+-/) ? parseInt(filename.match(/([0-9]+)-/)?.[1]!) : 0;
-        const end: number = filename.match(/-[0-9]+/) ? parseInt(filename.match(/-([0-9]+)/)?.[1]!) : 0;
-        let sentences: { English: string, Japanese: string, word: string }[] = [];
+    const start: number = filename.match(/[0-9]+-/) ? parseInt(filename.match(/([0-9]+)-/)?.[1]!) : 0;
+    const end: number = filename.match(/-[0-9]+/) ? parseInt(filename.match(/-([0-9]+)/)?.[1]!) : 0;
+    let sentences: { English: string, Japanese: string, word: string }[] = [];
 
-        if (filename.search(/\.json$/) >= 0) {
-            sentences = JSON.parse(result);
-        } else if (filename.search(/\.txt$/) >= 0) {
-            const lines: string[] = (result).split(/\r\n|\n|\r/).filter((v) => v.length > 0);
-            for (let i = 0; i < lines.length; i += 3) {
-                const sentence: Sentence = {
-                    English: lines[i + 0],
-                    Japanese: lines[i + 1],
-                    word: lines[i + 2]
-                }
+    if (filename.search(/\.json$/) >= 0) {
+        sentences = JSON.parse(result);
+    } else if (filename.search(/\.txt$/) >= 0) {
+        const lines: string[] = (result).split(/\r\n|\n|\r/).filter((v) => v.length > 0);
+        for (let i = 0; i < lines.length; i += 3) {
+            const sentence: Sentence = {
+                English: lines[i + 0],
+                Japanese: lines[i + 1],
+                word: lines[i + 2]
+            }
+            if (sentence.word && getAnswer(sentence.English, sentence.word).length > 0) {
                 sentences.push(sentence);
+            } else {
+                console.log(`addSectionDataFromFile: ${sentence.English}, ${sentence.word}`);
             }
         }
+    }
 
-        addSectionData(sentences, start, end, filename);
+    addSectionData(sentences, start, end, filename);
 }
 //----------------------------------------
 

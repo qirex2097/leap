@@ -5,21 +5,22 @@ import { useDropzone } from "react-dropzone";
 export const DropQuestions = ({ onLoad }: {
     onLoad: (filename: string, result: string) => void
 }) => {
-    const onDrop = React.useCallback(
+    const onDropAccepted = React.useCallback(
         (acceptedFiles: File[]) => {
             for (const f of acceptedFiles) {
+                if (f.name.match(/^\./)) continue;
                 const reader = new FileReader();
                 reader.onload = () => { onLoad(f.name, reader.result as string); }
                 reader.readAsText(f);
             }
         }, [onLoad])
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDropAccepted, accept: { 'text/plane': ['.txt']} })
     const centeringStyles = { position: "absolute", top: "50%", left: "50%", transform: "translateY(-50%) translateX(-50%)" }
 
     return <>
         <div {...getRootProps()} style={{
-            border: "1px dotted", width: 300, height: 150,
+            border: "1px dotted", height: 150,
             position: "relative"
         }}>
             <input {...getInputProps()} />
