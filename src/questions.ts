@@ -8,8 +8,6 @@ type Sentence = {
 }
 
 export type SectionData = {
-    start: number
-    end: number
     filename?: string
     sentences: Sentence[]
 }
@@ -39,26 +37,16 @@ export const getSelectedSections = (): number[] => {
     return selectedSections;
 }
 
-export const getLastQuestionNo = (): number => {
-    return currentData[currentData.length - 1].end
-}
-
-export const addSectionData = (sentences: Sentence[], start: number, end: number, filename: string = "") => {
-    const newStart = start > 0 ? start : getLastQuestionNo() + 1;
-    const newEnd = end > 0 ? end : newStart + sentences.length;
+export const addSectionData = (sentences: Sentence[], filename: string = "") => {
     const newSectionData: SectionData = {
-        start: newStart,
-        end: newEnd,
         filename: filename,
         sentences: sentences
     }
 
-    currentData = [...currentData, newSectionData].sort((a, b) => a.start - b.start); //addSectionData(newSectionData);
+    currentData = [...currentData, newSectionData].sort((a, b) => { return a.filename! < b.filename! ? -1 : 1 });
 }
 
 export const addSectionDataFromFile = (filename: string, result: string) => {
-    const start: number = filename.match(/[0-9]+-/) ? parseInt(filename.match(/([0-9]+)-/)?.[1]!) : 0;
-    const end: number = filename.match(/-[0-9]+/) ? parseInt(filename.match(/-([0-9]+)/)?.[1]!) : 0;
     let sentences: { English: string, Japanese: string, word: string }[] = [];
 
     if (filename.search(/\.json$/) >= 0) {
@@ -79,7 +67,7 @@ export const addSectionDataFromFile = (filename: string, result: string) => {
         }
     }
 
-    addSectionData(sentences, start, end, filename);
+    addSectionData(sentences, filename.substring(0, filename.indexOf('.')));
 }
 //----------------------------------------
 
@@ -118,7 +106,7 @@ export const selectQuestions = (pages: number[]): QuestionData[] => {
 
     let candidateQuestions: QuestionData[] = [];
     for (const p of pages) {
-        const section: string = currentData[p].filename ?? `${currentData[p].start} - ${currentData[p].end}`;
+        const section: string = currentData[p].filename ?? `xxx`;
         if (p < 0 || currentData.length <= p) continue;
         for (const s of currentData[p].sentences) {
             const answer = getAnswer(s.English, s.word)

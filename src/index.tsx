@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 const container = document.getElementById('root')!;
 const root = ReactDOMClient.createRoot(container);
 root.render(
-    <BrowserRouter>
+    <BrowserRouter basename='/leap'>
         <App />
     </BrowserRouter>
 );

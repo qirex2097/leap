@@ -59,7 +59,7 @@ export const App = () => {
     const goHome = () => {
         setQuestions([]);
         setQuestionNo(0);
-        navigate('/leap')
+        navigate('/')
     }
 
     const updateCorrectWrong = (idx: number, status: number) => {
@@ -81,7 +81,6 @@ export const App = () => {
         <hr></hr>
         <Routes>
             <Route path="/" element={<Home start={start} />} />
-            <Route path="/leap" element={<Home start={start} />} />
             <Route path="/question" element={<Question questions={currentQuestions} updateCorrectWrong={updateCorrectWrong} finished={finished} />} />
             <Route path="/answer" element={<Answer questions={currentQuestions} goOn={goOn} />} />
             <Route path="/finished" element={<Answer questions={currentQuestions} goOn={goResult} />} />

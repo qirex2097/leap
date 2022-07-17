@@ -14,7 +14,8 @@ type Label = {
 export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => void }): JSX.Element => {
     const sectionData: SectionData[] = getCurrentSectionData();
     const [labels, setLabels] = React.useState<Label[]>(sectionData.map((v, i) => {
-        return { label: `${v.start}-${v.end}`, checked: getSelectedSections().includes(i) }
+        const filename = v.filename || 'xxx';
+        return { label: `${filename}`, checked: getSelectedSections().includes(i) }
     }));
     let newLabels = [...labels];
 
@@ -30,7 +31,7 @@ export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => vo
         addSectionDataFromFile(filename, result);
 
         newLabels = getCurrentSectionData().map((v, i) => {
-            return { label: `${v.start}-${v.end}`, checked: false }
+            return { label: `${v.filename}`, checked: false }
         })
         setLabels(newLabels);
     }
