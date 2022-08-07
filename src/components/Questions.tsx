@@ -64,7 +64,7 @@ const Question = ({ English, Japanese, answer, correctOrWrong, setCorrectWrong }
                     style={{ width: answer.length * 16 + 24 }}
                     startAdornment={startAdornment}
                 />
-                {separater}</span>);
+                {separater} </span>);
         } else {
             return <span key={i}>{v}&nbsp;</span>
         }
