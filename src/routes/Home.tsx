@@ -9,13 +9,52 @@ import { DropQuestions } from '../components/DropQuestions';
 type Label = {
     label: string
     checked: boolean
+    group?: string
+}
+
+const QuestionList = ({ labels, handleChange }: { 
+    labels: Label[]
+    handleChange: (idx: number, checked: boolean) => void
+ }): JSX.Element => {
+    const yoko: number = window.innerWidth > 750 ? 8 : 4;
+    type localLabel = Label & {
+        idx: number
+    }
+    const localLabels: localLabel[] = labels.map((v, i) => { return { ...v, idx: i }})
+    const labels0: localLabel[] = localLabels.filter((v) => { return v.group ? false : true });
+    const labels1: localLabel[] = localLabels.filter((v) => { return v.group ? true : false });
+    return (<>
+        <details>
+            <summary>LEAP</summary>
+            <Grid container spacing={0}>{
+                labels0.map((v) => {
+                    return <Grid item key={v.idx} xs={12 / yoko}><FormControlLabel
+                        key={v.idx}
+                        checked={v.checked}
+                        control={<Checkbox />}
+                        onChange={(event: React.SyntheticEvent, checked: boolean) => handleChange(v.idx, checked)}
+                        label={v.label} /></Grid>
+                })
+            }</Grid>
+        </details>
+        <Grid container spacing={0}>{
+            labels1.map((v) => {
+                return <Grid item key={v.idx} xs={12 / yoko}><FormControlLabel
+                    key={v.idx}
+                    checked={v.checked}
+                    control={<Checkbox />}
+                    onChange={(event: React.SyntheticEvent, checked: boolean) => handleChange(v.idx, checked)}
+                    label={v.label} /></Grid>
+            })
+        }</Grid>
+    </>)
 }
 
 export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => void }): JSX.Element => {
     const sectionData: SectionData[] = getCurrentSectionData();
     const [labels, setLabels] = React.useState<Label[]>(sectionData.map((v, i) => {
         const filename = v.filename || 'xxx';
-        return { label: `${filename}`, checked: getSelectedSections().includes(i) }
+        return { label: `${filename}`, checked: getSelectedSections().includes(i), group: v.group }
     }));
     let newLabels = [...labels];
 
@@ -27,11 +66,11 @@ export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => vo
         start(selectQuestions(selectedSections));
     }
 
-    const updateLabels = (filename: string, result: string): void => {
-        addSectionDataFromFile(filename, result);
+    const updateLabels = (filename: string, result: string, group: string): void => {
+        addSectionDataFromFile(filename, result, group);
 
         newLabels = getCurrentSectionData().map((v, i) => {
-            return { label: `${v.filename}`, checked: false }
+            return { label: `${v.filename}`, checked: false, group: v.group }
         })
         setLabels(newLabels);
     }
@@ -50,16 +89,7 @@ export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => vo
 
     const yoko: number = window.innerWidth > 750 ? 8 : 4;
     return (<>
-        <Grid container spacing={0}>{
-            newLabels.map((v, i) => {
-                return <Grid item key={i} xs={12 / yoko}><FormControlLabel
-                    key={i}
-                    checked={v.checked}
-                    control={<Checkbox />}
-                    onChange={(event: React.SyntheticEvent, checked: boolean) => handleChange(i, checked)}
-                    label={v.label} /></Grid>
-            })
-        }</Grid>
+        <QuestionList labels={newLabels} handleChange={handleChange} />
         <Button onClick={questionStart}>START</Button>
         <Button onClick={reset}>RESET</Button>
         <DropQuestions onLoad={updateLabels} />

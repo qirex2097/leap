@@ -3,14 +3,14 @@ import UploadFile from '@mui/icons-material/UploadFile';
 import { useDropzone } from "react-dropzone";
 
 export const DropQuestions = ({ onLoad }: {
-    onLoad: (filename: string, result: string) => void
+    onLoad: (filename: string, result: string, group: string) => void
 }) => {
     const onDropAccepted = React.useCallback(
         (acceptedFiles: File[]) => {
             for (const f of acceptedFiles) {
                 if (f.name.match(/^\./)) continue;
                 const reader = new FileReader();
-                reader.onload = () => { onLoad(f.name, reader.result as string); }
+                reader.onload = () => { onLoad(f.name, reader.result as string, 'file'); }
                 reader.readAsText(f);
             }
         }, [onLoad])

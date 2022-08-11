@@ -8,8 +8,9 @@ type Sentence = {
 }
 
 export type SectionData = {
-    filename?: string
     sentences: Sentence[]
+    filename?: string
+    group?: string
 }
 
 export type QuestionData = {
@@ -37,16 +38,17 @@ export const getSelectedSections = (): number[] => {
     return selectedSections;
 }
 
-export const addSectionData = (sentences: Sentence[], filename: string = "") => {
+export const addSectionData = (sentences: Sentence[], filename: string = "", group: string) => {
     const newSectionData: SectionData = {
+        sentences: sentences,
         filename: filename,
-        sentences: sentences
+        group: group
     }
 
     currentData = [...currentData, newSectionData].sort((a, b) => { return a.filename! < b.filename! ? -1 : 1 });
 }
 
-export const addSectionDataFromFile = (filename: string, result: string) => {
+export const addSectionDataFromFile = (filename: string, result: string, group: string) => {
     let sentences: { English: string, Japanese: string, word: string }[] = [];
 
     if (filename.search(/\.json$/) >= 0) {
@@ -67,7 +69,7 @@ export const addSectionDataFromFile = (filename: string, result: string) => {
         }
     }
 
-    addSectionData(sentences, filename.substring(0, filename.indexOf('.')));
+    addSectionData(sentences, filename.substring(0, filename.indexOf('.')), group);
 }
 //----------------------------------------
 
