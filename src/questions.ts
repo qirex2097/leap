@@ -23,6 +23,32 @@ export type QuestionData = {
 
 //----------------------------------------
 
+const getParagraphs = (lines: string[]): string[] => {
+    const paragraphs = [];
+    let currentParagraph = '';
+    let lineKazu = 0;
+    for (const line of lines) {
+        if (line.length === 0 || lineKazu >= 3) {
+            if (currentParagraph.length > 0) {
+                paragraphs.push(currentParagraph)
+            }
+            currentParagraph = '';
+            lineKazu = 0;
+        } else {
+            currentParagraph = currentParagraph.length > 0 ? currentParagraph + '\n' + line : line;
+            lineKazu++;
+        }
+    }
+
+    if (currentParagraph.length > 0) {
+        paragraphs.push(currentParagraph);
+    }
+
+    return paragraphs;
+}
+
+//----------------------------------------
+
 let currentData: SectionData[] = [...data];
 let selectedSections: number[] = [];
 
@@ -54,17 +80,13 @@ export const addSectionDataFromFile = (filename: string, result: string, group: 
     if (filename.search(/\.json$/) >= 0) {
         sentences = JSON.parse(result);
     } else if (filename.search(/\.txt$/) >= 0) {
-        const lines: string[] = (result).split(/\r\n|\n|\r/).filter((v) => v.length > 0);
-        for (let i = 0; i < lines.length; i += 3) {
-            const sentence: Sentence = {
-                English: lines[i + 0],
-                Japanese: lines[i + 1],
-                word: lines[i + 2]
-            }
-            if (sentence.word && getAnswer(sentence.English, sentence.word).length > 0) {
-                sentences.push(sentence);
+        const paragraphs: string[] = getParagraphs(result.split(/\r\n|\n|\r/))
+        for (const para of paragraphs) {
+            const [eng, jpn, word]: string[] = para.split('\n')
+            if (word && getAnswer(eng, word).length > 0) {
+                sentences.push({English: eng, Japanese: jpn, word: word});
             } else {
-                console.log(`addSectionDataFromFile: ${sentence.English}, ${sentence.word}`);
+                console.log(`addSectionDataFromFile: ${eng}, ${word}`);
             }
         }
     }

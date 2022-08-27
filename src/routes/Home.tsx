@@ -87,7 +87,6 @@ export const Home = ({ start }: { start: (newQuestionData: QuestionData[]) => vo
         setLabels(labels.map((v) => { return { ...v, checked: false } }));
     }
 
-    const yoko: number = window.innerWidth > 750 ? 8 : 4;
     return (<>
         <QuestionList labels={newLabels} handleChange={handleChange} />
         <Button onClick={questionStart}>START</Button>
