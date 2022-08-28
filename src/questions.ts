@@ -4,7 +4,7 @@ import data from "./data.json";
 type Sentence = {
   English: string;
   Japanese: string;
-  word: string;
+  words: string[];
 };
 
 export type SectionData = {
@@ -94,14 +94,18 @@ const getSentences = (result: string): Sentence[] => {
     const [eng, jpn, word]: string[] = para.split("\n");
     if (word) {
       if (getAnswer(eng, word).length > 0) {
-        sentences.push({ English: eng, Japanese: jpn, word: word });
+        sentences.push({ English: eng, Japanese: jpn, words: [word] });
       } else {
         console.log(`getSentences: ${eng}, ${word}`);
       }
     } else {
       const { question, answers } = searchQuestionAnswers(eng);
-      const answerMoji = question.substring(answers[0][0], answers[0][1]);
-      sentences.push({ English: question, Japanese: jpn, word: answerMoji });
+      let words: string[] = [];
+      for (const [p0, p1] of answers) {
+        words.push(question.substring(p0, p1));
+      }
+
+      sentences.push({ English: question, Japanese: jpn, words: words });
     }
   }
 
@@ -194,7 +198,7 @@ export const selectQuestions = (pages: number[]): QuestionData[] => {
     const section: string = currentData[p].filename ?? `xxx`;
     if (p < 0 || currentData.length <= p) continue;
     for (const s of currentData[p].sentences) {
-      const answer = getAnswer(s.English, s.word);
+      const answer = getAnswer(s.English, s.words[0]);
       candidateQuestions.push({
         ...s,
         answer: answer,
