@@ -4,7 +4,7 @@ import data from "./data.json";
 type Sentence = {
   English: string;
   Japanese: string;
-  words: string[];
+  answers: number[][];
 };
 
 export type SectionData = {
@@ -16,14 +16,30 @@ export type SectionData = {
 export type QuestionData = {
   English: string;
   Japanese: string;
-  answer: string;
+  answers: number[][];
   correctOrWrong: number;
-  wordNo: string;
-  answers?: number[][];
+  sectionName: string;
 };
 
 //----------------------------------------
-const searchQuestionAnswers = (
+const divideQuestionLocal = (eng: string, answers: number[][]): string[] => {
+  let token: string[] = [];
+
+  let prev: number = 0;
+  for (const answer of answers) {
+    token.push(eng.substring(prev, answer[0]));
+    token.push(eng.substring(answer[0], answer[1]));
+    prev = answer[1];
+  }
+  token.push(eng.substring(prev));
+
+  return token;
+};
+export const divideQuestion = (question: QuestionData): string[] => {
+  return divideQuestionLocal(question.English, question.answers);
+};
+
+const searchAnswersFromQuestion = (
   buff: string
 ): { question: string; answers: number[][] } => {
   let question: string = buff.replace(/>>+|<<+/g, "");
@@ -39,15 +55,18 @@ const searchQuestionAnswers = (
     }
   }
 
-  const [p0, p1]: number[] = [deletedChar[0], deletedChar[1]];
-  const answerMoji = question.substring(p0, p1);
-  if (answerMoji.indexOf(" ") < 0) {
-    answers.push([p0, p1]);
-  } else {
-    let prev = p0;
-    for (const word of answerMoji.split(" ")) {
-      answers.push([prev, prev + word.length]);
-      prev += word.length + 1;
+  for (let i = 0; i < deletedChar.length; i += 2) {
+    const [p0, p1]: number[] = [deletedChar[i], deletedChar[i + 1]];
+    const answerMoji = question.substring(p0, p1);
+
+    if (answerMoji.indexOf(" ") < 0) {
+      answers.push([p0, p1]);
+    } else {
+      let prev = p0;
+      for (const word of answerMoji.split(" ")) {
+        answers.push([prev, prev + word.length]);
+        prev += word.length + 1;
+      }
     }
   }
 
@@ -86,26 +105,44 @@ const getParagraphs = (lines: string[]): string[] => {
   return paragraphs;
 };
 
-const getSentences = (result: string): Sentence[] => {
+const getAnswer = (English: string, word: string): string => {
+  let answer: string = "";
+  for (const w of English.split(" ")) {
+    if (w.toLowerCase().search(word.toLowerCase()) >= 0) {
+      answer = w;
+    }
+  }
+
+  return answer;
+};
+
+const getSentences = (text: string): Sentence[] => {
   let sentences: Sentence[] = [];
 
-  const paragraphs: string[] = getParagraphs(result.split(/\r\n|\n|\r/));
+  const paragraphs: string[] = getParagraphs(text.split(/\r\n|\n|\r/));
   for (const para of paragraphs) {
     const [eng, jpn, word]: string[] = para.split("\n");
     if (word) {
-      if (getAnswer(eng, word).length > 0) {
-        sentences.push({ English: eng, Japanese: jpn, words: [word] });
+      const answer: string = getAnswer(eng, word);
+      if (answer.length > 0) {
+        const p0: number = eng.search(answer);
+        const p1: number = p0 + answer.length;
+        sentences.push({
+          English: eng,
+          Japanese: jpn,
+          answers: [[p0, p1]],
+        });
       } else {
         console.log(`getSentences: ${eng}, ${word}`);
       }
     } else {
-      const { question, answers } = searchQuestionAnswers(eng);
-      let words: string[] = [];
-      for (const [p0, p1] of answers) {
-        words.push(question.substring(p0, p1));
-      }
+      const { question, answers } = searchAnswersFromQuestion(eng);
 
-      sentences.push({ English: question, Japanese: jpn, words: words });
+      sentences.push({
+        English: question,
+        Japanese: jpn,
+        answers: answers,
+      });
     }
   }
 
@@ -149,17 +186,6 @@ export const addSectionDataFromFile = (
 };
 //----------------------------------------
 
-const getAnswer = (English: string, word: string): string => {
-  let answer: string = "";
-  for (const w of English.split(" ")) {
-    if (w.toLowerCase().search(word.toLowerCase()) >= 0) {
-      answer = w;
-    }
-  }
-
-  return answer;
-};
-
 export const randomlySortQuestions = (
   candidateQuestions: QuestionData[]
 ): QuestionData[] => {
@@ -198,12 +224,10 @@ export const selectQuestions = (pages: number[]): QuestionData[] => {
     const section: string = currentData[p].filename ?? `xxx`;
     if (p < 0 || currentData.length <= p) continue;
     for (const s of currentData[p].sentences) {
-      const answer = getAnswer(s.English, s.words[0]);
       candidateQuestions.push({
         ...s,
-        answer: answer,
         correctOrWrong: 0,
-        wordNo: section,
+        sectionName: section,
       });
     }
   }
@@ -213,6 +237,6 @@ export const selectQuestions = (pages: number[]): QuestionData[] => {
 //----------------------------------------
 export const __local__ = {
   getParagraphs,
-  getSentences,
-  searchQuestionAnswers,
+  searchAnswersFromQuestion,
+  divideQuestionLocal,
 };

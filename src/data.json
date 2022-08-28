@@ -1,141 +1,66 @@
 [
     {
-        "filename": "388-394",
-        "sentences": [
-            {
-                "English": "I can hardly wait for the summer.",
-                "Japanese": "夏が待ち遠しい(ほとんど待てない)。",
-                "words": ["hardly"]
-            },
-            {
-                "English": "He hardly ever smiles.",
-                "Japanese": "彼はめったに笑わない.",
-                "words": ["hardly"]
-            },
-            {
-                "English": "nearly 100 people",
-                "Japanese": "100人近い人々 (100は超えない)",
-                "words": ["nearly"]
-            },
-            {
-                "English": "We very nearly lost our lives.",
-                "Japanese": "私たちはあやうく命を落としかけた。",
-                "words": ["nearly"]
-            },
-            {
-                "English": "I am partly to blame.",
-                "Japanese": "私にも一部責任がある.",
-                "words": ["partly"]
-            },
-            {
-                "English": "Jim looks happy, but actually he's sad.",
-                "Japanese": "ジムは幸せそうだけど本当は悲しい.",
-                "words": ["actually"]
-            },
-            {
-                "English": "Ken looks younger than he actually is.",
-                "Japanese": "ケンは実際より若く見える.",
-                "words": ["actually"]
-            },
-            {
-                "English": "He is indeed a kind person.",
-                "Japanese": "彼は本当に親切な人です。",
-                "words": ["indeed"]
-            },
-            {
-                "English": "Indeed, he is young, but he is very smart.",
-                "Japanese": "確かに彼は若いですが､ とても頭がいい",
-                "words": ["Indeed"]
-            },
-            {
-                "English": "Even Homer sometimes nods.",
-                "Japanese": "<ことわざ>弘法にも筆の誤り (ホメロスでさえも時には居眠りする)。",
-                "words": ["Even"]
-            },
-            {
-                "English": "Things became even more difficult.",
-                "Japanese": "事態はさらに難しくなった.",
-                "words": ["even"]
-            },
-            {
-                "English": "even numbers ( odd numbers)",
-                "Japanese": "偶数(奇数)",
-                "words": ["even"]
-            },
-            {
-                "English": "white, even teeth",
-                "Japanese": "白くきれいにそろった歯",
-                "words": ["even"]
-            },
-            {
-                "English": "It cost 10 dollars even.",
-                "Japanese": "ちょうど10ドルでした.",
-                "words": ["even"]
-            },
-            {
-                "English": "Where exactly did you stay in Australia?",
-                "Japanese": "オーストラリアの正確にはどこに滞在したのですか.",
-                "words": ["exactly"]
-            },
-            {
-                "English": "Exactly. / Not _______.",
-                "Japanese": "そのとおりです. / ちょっと違います(そのとおりではないです)。",
-                "words": ["Exactly"]
-            }
-        ]
-    },
-    {
         "filename": "395-400",
         "sentences": [
             {
                 "English": "Prices are gradually increasing.",
                 "Japanese": "物価が徐々に増加している.",
-                "words": ["gradually"]
+                "words": ["gradually"],
+                "answers": [[11, 20]]
             },
             {
                 "English": "Even experts are only human, and therefore mistakes sometimes occur.",
                 "Japanese": "専門家でもただの人間だ。 それゆえ、ミスが時々起きる.",
-                "words": ["therefore"]
+                "words": ["therefore"],
+                "answers": [[33,42]]
             },
             {
                 "English": "If you can't make it, your mother may go instead.",
                 "Japanese": "もしあなたが行けないのなら､君のお母さんが代わりに行ってもよい。",
-                "words": ["instead"]
+                "words": ["instead"],
+                "answers": [[41, 49]]
             },
             {
                 "English": "take the stairs instead of the elevator",
                 "Japanese": "エレベーターの代わりに階段を使う",
-                "words": ["instead"]
+                "words": ["instead"],
+                "answers": [[16,23]]
             },
             {
                 "English": "We are open until 11 p.m.on weekdays.",
                 "Japanese": "平日は午後11時まで営業しています。",
-                "words": ["until"]
+                "words": ["until"],
+                "answers": [[12,17]]
             },
             {
                 "English": "Stay here until I get back.",
                 "Japanese": "私が戻るまでここにいて.",
-                "words": ["until"]
+                "words": ["until"],
+                "answers": [[10,15]]
             },
             {
                 "English": "learn another foreign language besides English",
                 "Japanese": "英語以外の (英語に加えて) 外国語を勉強する",
-                "words": ["besides"]
+                "words": ["besides"],
+                "answers": [[31,38]]
             },
             {
                 "English": "It's too late to go out; besides, it's snowing.",
                 "Japanese": "外出するには遅すぎるし, おまけに,雪が降っている。",
-                "words": ["besides"]
+                "words": ["besides"],
+                "answers": [[25,33]]
             },
             {
                 "English": "Everybody was asleep except (for) him.",
                 "Japanese": "彼以外は皆眠っていた。",
-                "words": ["except"]
+                "words": ["except"],
+                "answers": [[21,27]]
             },
             {
                 "English": "Except for a dog, the park was empty.",
                 "Japanese": "1匹のイヌを除いて, 公園には誰もいなかった。",
-                "words": ["Except"]
+                "words": ["Except"],
+                "answers": [[0,6]]
             }
         ]
     }

@@ -5,7 +5,7 @@ import Check from "@mui/icons-material/Check";
 import Clear from "@mui/icons-material/Clear";
 import Call from "@mui/icons-material/Call";
 
-import { QuestionData } from "../questions";
+import { QuestionData, divideQuestion } from "../questions";
 
 const Question = ({
   question,
@@ -16,13 +16,7 @@ const Question = ({
   correctOrWrong: number;
   setCorrectWrong: (value: number) => void;
 }) => {
-  const [English, Japanese, answer2]: string[] = [
-    question.English,
-    question.Japanese,
-    question.answer,
-  ];
-  //  const separater: string = answer.match(/[?.,:;]$/)?.[0] || "";
-  //  const answer_moji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || "";
+  const [English, Japanese]: string[] = [question.English, question.Japanese];
   const NONE: number = 0;
   const CORRECT: number = 1;
   const WRONG: number = -1;
@@ -80,17 +74,15 @@ const Question = ({
     );
   }
 
-  const pos = English.search(answer2);
-  const answers: number[][] = [];
-  answers[0] = [pos, pos + answer2.length];
+  const answers: number[][] = question.answers || [[0, English.length]];
 
   const questionLines: JSX.Element[] = [];
   let prevPos: number = 0;
   for (const [first, second] of answers) {
-    const answer = English.substring(first, second)
+    const answer = English.substring(first, second);
     const separater: string = answer.match(/[?.,:;]$/)?.[0] || "";
-    const answer_moji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || ""
-    questionLines.push(<span>{English.substring(prevPos, first)}</span>)
+    const answer_moji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || "";
+    questionLines.push(<span>{English.substring(prevPos, first)}</span>);
     questionLines.push(
       <span>
         <Input
@@ -109,7 +101,7 @@ const Question = ({
         {separater}
       </span>
     );
-    prevPos = second
+    prevPos = second;
   }
   questionLines.push(<span>{English.substring(prevPos)}</span>);
 
@@ -162,25 +154,21 @@ export const Answers = ({ questions }: { questions: QuestionData[] }) => {
         {correctNum} / {questions.length}
       </h3>
       {wrongQuestions.map((v, i) => {
-        const questionLine = v.English.split(" ").map((e, i) => {
-          if (e.search(v.answer) >= 0) {
-            return (
-              <>
-                <span key={i} style={{ borderBottom: "solid 3px red" }}>
-                  {v.answer}
-                </span>
-                &nbsp;
-              </>
-            );
+        const token: string[] = divideQuestion(v)
+        const questionLine = token.map((e, i) => {
+          if (i % 2 === 0) {
+            return <span key={i}>{e}</span>
           } else {
-            return <span key={i}>{e}&nbsp;</span>;
+            return <span key={i} style={{borderBottom: "solid 3px red"}}>
+              {e}
+            </span>
           }
-        });
+        })
 
         return (
           <div key={i}>
             <div>
-              {v.Japanese} / {v.wordNo}
+              {v.Japanese} / {v.sectionName}
             </div>
             <div>{questionLine}</div>
             <p></p>
