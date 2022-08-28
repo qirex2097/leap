@@ -8,27 +8,31 @@ import Call from "@mui/icons-material/Call";
 import { QuestionData } from "../questions";
 
 const Question = ({
-  English,
-  Japanese,
-  answer,
+  question,
   correctOrWrong,
   setCorrectWrong,
 }: {
-  English: string;
-  Japanese: string;
-  answer: string;
+  question: QuestionData;
   correctOrWrong: number;
   setCorrectWrong: (value: number) => void;
 }) => {
-  const separater: string = answer.match(/[?.,:;]$/)?.[0] || "";
-  const answer_moji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || "";
+  const [English, Japanese, answer2]: string[] = [
+    question.English,
+    question.Japanese,
+    question.answer,
+  ];
+  //  const separater: string = answer.match(/[?.,:;]$/)?.[0] || "";
+  //  const answer_moji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || "";
   const NONE: number = 0;
   const CORRECT: number = 1;
   const WRONG: number = -1;
   const HINT: number = -2;
   const isHintUsed: boolean = correctOrWrong === HINT;
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement>,
+    answer_moji: string
+  ): void => {
     if (e.target.value.length === 0) return;
 
     if (isHintUsed) {
@@ -45,7 +49,10 @@ const Question = ({
 
     setCorrectWrong(NONE);
   };
-  const handleChange = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.FocusEvent<HTMLInputElement>,
+    answer_moji: string
+  ): void => {
     if (e.target.value === " ") {
       e.target.value = answer_moji;
       setCorrectWrong(HINT);
@@ -73,47 +80,43 @@ const Question = ({
     );
   }
 
-  /*
-    const questionLine = English.split(' ').map((v, i) => {
-        if (v.search(answer) >= 0) {
-            return (<span key={i}>
-                <Input type="text" color='secondary'
-                    onBlur={handleBlur}
-                    onFocus={handleFocus}
-                    onChange={handleChange}
-                    style={{ width: answer.length * 16 + 24 }}
-                    startAdornment={startAdornment}
-                />
-                {separater} </span>);
-        } else {
-            return <span key={i}>{v}&nbsp;</span>
-        }
-    });
-    */
-  const pos = English.search(answer);
-  const questionLine = (
-    <>
-      <span>{English.substring(0, pos)}</span>
+  const pos = English.search(answer2);
+  const answers: number[][] = [];
+  answers[0] = [pos, pos + answer2.length];
+
+  const questionLines: JSX.Element[] = [];
+  let prevPos: number = 0;
+  for (const [first, second] of answers) {
+    const answer = English.substring(first, second)
+    const separater: string = answer.match(/[?.,:;]$/)?.[0] || "";
+    const answer_moji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || ""
+    questionLines.push(<span>{English.substring(prevPos, first)}</span>)
+    questionLines.push(
       <span>
         <Input
           type="text"
           color="secondary"
-          onBlur={handleBlur}
+          onBlur={(e: React.FocusEvent<HTMLInputElement>) =>
+            handleBlur(e, answer_moji)
+          }
           onFocus={handleFocus}
-          onChange={handleChange}
-          style={{ width: answer.length * 16 + 24,  height: 24}}
+          onChange={(e: React.FocusEvent<HTMLInputElement>) =>
+            handleChange(e, answer_moji)
+          }
+          style={{ width: answer.length * 16 + 24, height: 24 }}
           startAdornment={startAdornment}
         />
         {separater}
       </span>
-      <span>{English.substring(pos + answer.length)}</span>
-    </>
-  );
+    );
+    prevPos = second
+  }
+  questionLines.push(<span>{English.substring(prevPos)}</span>);
 
   return (
     <>
       <div>{Japanese}</div>
-      <div>{questionLine}</div>
+      <div>{questionLines}</div>
       <p></p>
     </>
   );
@@ -132,7 +135,7 @@ export const Questions = ({
         return (
           <Question
             key={i}
-            {...v}
+            question={v}
             correctOrWrong={questions[i].correctOrWrong}
             setCorrectWrong={(value: number) => updateCorrectWrong(i, value)}
           />
