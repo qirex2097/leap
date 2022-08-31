@@ -16,7 +16,6 @@ const Question = ({
   correctOrWrong: number;
   setCorrectWrong: (value: number) => void;
 }) => {
-  const [English, Japanese]: string[] = [question.English, question.Japanese];
   const NONE: number = 0;
   const CORRECT: number = 1;
   const WRONG: number = -1;
@@ -74,17 +73,16 @@ const Question = ({
     );
   }
 
-  const answers: number[][] = question.answers || [[0, English.length]];
+  const token: string[] = divideQuestion(question)
+  const questionLines: JSX.Element[] = token.map((partOfEnglish, i) => {
+    if (i % 2 === 0) {
+      return <span key={i}>{partOfEnglish}</span>
+    } else {
+      const answer = partOfEnglish;
+      const separater: string = answer.match(/[?.,:;]$/)?.[0] || "";
+      const answer_moji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || "";
 
-  const questionLines: JSX.Element[] = [];
-  let prevPos: number = 0;
-  for (const [first, second] of answers) {
-    const answer = English.substring(first, second);
-    const separater: string = answer.match(/[?.,:;]$/)?.[0] || "";
-    const answer_moji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || "";
-    questionLines.push(<span>{English.substring(prevPos, first)}</span>);
-    questionLines.push(
-      <span>
+      return (<span key={i}>
         <Input
           type="text"
           color="secondary"
@@ -99,15 +97,13 @@ const Question = ({
           startAdornment={startAdornment}
         />
         {separater}
-      </span>
-    );
-    prevPos = second;
-  }
-  questionLines.push(<span>{English.substring(prevPos)}</span>);
+      </span>)
+    }
+  })
 
   return (
     <>
-      <div>{Japanese}</div>
+      <div>{question.Japanese}</div>
       <div>{questionLines}</div>
       <p></p>
     </>
