@@ -1,32 +1,32 @@
 //----------------------------------------
-import data from "./data.json";
-
 type Sentence = {
   English: string;
   Japanese: string;
-  answers: number[][];
+  answerPosition: number[][];
 };
 
 export type SectionData = {
   sentences: Sentence[];
   filename?: string;
-  group?: string;
+  group: string;
 };
 
 export type QuestionData = {
   English: string;
   Japanese: string;
-  answers: number[][];
+  answerPosition: number[][];
   correctOrWrong: number;
   sectionName: string;
 };
-
 //----------------------------------------
-const divideQuestionLocal = (eng: string, answers: number[][]): string[] => {
+const divideQuestionLocal = (
+  eng: string,
+  answerPosition: number[][]
+): string[] => {
   let token: string[] = [];
 
   let prev: number = 0;
-  for (const answer of answers) {
+  for (const answer of answerPosition) {
     token.push(eng.substring(prev, answer[0]));
     token.push(eng.substring(answer[0], answer[1]));
     prev = answer[1];
@@ -36,14 +36,14 @@ const divideQuestionLocal = (eng: string, answers: number[][]): string[] => {
   return token;
 };
 export const divideQuestion = (question: QuestionData): string[] => {
-  return divideQuestionLocal(question.English, question.answers);
+  return divideQuestionLocal(question.English, question.answerPosition);
 };
 
 const searchAnswersFromQuestion = (
   buff: string
-): { question: string; answers: number[][] } => {
+): { question: string; answerPosition: number[][] } => {
   let question: string = buff.replace(/>>+|<<+/g, "");
-  let answers: number[][] = [];
+  let answerPosition: number[][] = [];
 
   let y = 0;
   let deletedChar: number[] = [];
@@ -60,17 +60,17 @@ const searchAnswersFromQuestion = (
     const answerMoji = question.substring(p0, p1);
 
     if (answerMoji.indexOf(" ") < 0) {
-      answers.push([p0, p1]);
+      answerPosition.push([p0, p1]);
     } else {
       let prev = p0;
       for (const word of answerMoji.split(" ")) {
-        answers.push([prev, prev + word.length]);
+        answerPosition.push([prev, prev + word.length]);
         prev += word.length + 1;
       }
     }
   }
 
-  return { question, answers };
+  return { question, answerPosition };
 };
 
 const getParagraphs = (lines: string[]): string[] => {
@@ -130,18 +130,18 @@ const getSentences = (text: string): Sentence[] => {
         sentences.push({
           English: eng,
           Japanese: jpn,
-          answers: [[p0, p1]],
+          answerPosition: [[p0, p1]],
         });
       } else {
         console.log(`getSentences: ${eng}, ${word}`);
       }
     } else {
-      const { question, answers } = searchAnswersFromQuestion(eng);
+      const { question, answerPosition } = searchAnswersFromQuestion(eng);
 
       sentences.push({
         English: question,
         Japanese: jpn,
-        answers: answers,
+        answerPosition: answerPosition,
       });
     }
   }
@@ -150,15 +150,11 @@ const getSentences = (text: string): Sentence[] => {
 };
 //----------------------------------------
 
-let currentData: SectionData[] = [...data];
+let currentData: SectionData[] = [];
 let selectedSections: number[] = [];
 
 export const getCurrentSectionData = (): SectionData[] => {
   return currentData;
-};
-
-export const resetLoadedSectionData = () => {
-  currentData = [...data];
 };
 
 export const getSelectedSections = (): number[] => {

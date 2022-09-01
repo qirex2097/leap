@@ -7,10 +7,11 @@ export const DropQuestions = ({ onLoad }: {
 }) => {
     const onDropAccepted = React.useCallback(
         (acceptedFiles: File[]) => {
+            const groupName: string = acceptedFiles.length > 0 ? acceptedFiles[0].name : 'FILES'
             for (const f of acceptedFiles) {
                 if (f.name.match(/^\./)) continue;
                 const reader = new FileReader();
-                reader.onload = () => { onLoad(f.name, reader.result as string, 'file'); }
+                reader.onload = () => { onLoad(f.name, reader.result as string, groupName); }
                 reader.readAsText(f);
             }
         }, [onLoad])
