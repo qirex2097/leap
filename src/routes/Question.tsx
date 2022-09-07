@@ -169,11 +169,20 @@ const QuestionLine = ({
 
 const Questions = ({
   questions,
-  updateCorrectWrong,
+  correctOrWrong,
+  setCorrectOrWrong,
 }: {
   questions: QuestionData[];
-  updateCorrectWrong: (idx: number, status: number) => void;
+  correctOrWrong: number[]
+  setCorrectOrWrong: (correctOrWrong: number[]) => void
 }) => {
+  const updateCorrectOrWrong = (idx: number, state: number) => {
+    const newCorrectOrWrong = correctOrWrong.map((v, i) => {
+      if (i === idx) { return state } else { return v }
+    })
+    setCorrectOrWrong(newCorrectOrWrong)
+  }
+
   return (
     <>
       {questions.map((v, i) => {
@@ -182,8 +191,8 @@ const Questions = ({
             key={i}
             question={v}
             questionNo={i}
-            correctOrWrong={questions[i].correctOrWrong}
-            setCorrectWrong={(value: number) => updateCorrectWrong(i, value)}
+            correctOrWrong={correctOrWrong[i]}
+            setCorrectWrong={(value: number) => updateCorrectOrWrong(i, value)}
           />
         );
       })}
@@ -193,14 +202,14 @@ const Questions = ({
 //----------------------------------------
 export const Question = ({
   questions,
-  updateCorrectWrong,
   finished,
 }: {
   questions: QuestionData[];
-  updateCorrectWrong: (idx: number, status: number) => void;
-  finished: () => void;
+  finished: (correctOrWrong: number[]) => void;
 }) => {
-  useEffect(() => {
+  const [correctOrWrong, setCorrectOrWrong] = React.useState<number[]>(new Array(questions.length).fill(0))
+
+  React.useEffect(() => {
     document.getElementById(getQuestionId(0, 0))?.focus();
   }, []);
 
@@ -208,17 +217,15 @@ export const Question = ({
     <>
       <Questions
         questions={questions}
-        updateCorrectWrong={updateCorrectWrong}
+        correctOrWrong={correctOrWrong}
+        setCorrectOrWrong={setCorrectOrWrong}
       />
       <hr></hr>
-      <Button id={finishButtonId} onClick={finished}>
+      <Button id={finishButtonId} onClick={() => {finished(correctOrWrong)}}>
         FINISHED
       </Button>
-      {questions.reduce((prev, question) => {
-        if (question.correctOrWrong > 0) prev += 1;
-        return prev;
-      }, 0)}{" "}
-      / {questions.length}
+      
+      {correctOrWrong.reduce((prev, state) => {if (state > 0) prev += 1; return prev}, 0)}{" "}/ {questions.length}
     </>
   );
 };
