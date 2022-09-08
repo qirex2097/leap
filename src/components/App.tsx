@@ -16,7 +16,6 @@ export const App = () => {
   const [questionNo, setQuestionNo] = React.useState<number>(0);
   const [isCorrect, setIsCorrect] = React.useState<boolean[]>([]);
   const navigate = useNavigate();
-  let refresh = false;
 
   const start = (newQuestions: QuestionData[]) => {
     setQuestions(newQuestions);
@@ -27,8 +26,6 @@ export const App = () => {
 
   const retry = (retryQuestions: QuestionData[]) => {
     if (retryQuestions.length === 0) {
-      setQuestions([]);
-      setQuestionNo(0);
       navigate("/");
     } else {
       const newQuestions: QuestionData[] =
@@ -37,11 +34,10 @@ export const App = () => {
     }
   };
 
-  const finished = (currentCorrectOrWrong: number[]) => {
-    refresh = true;
+  const finished = (currentIsCorrect: boolean[]) => {
     const newIsCorrect: boolean[] = isCorrect.map((v, i) => {
-      if (questionNo <= i && i < questionNo + currentCorrectOrWrong.length) {
-        return currentCorrectOrWrong[i - questionNo] > 0;
+      if (questionNo <= i && i < questionNo + currentIsCorrect.length) {
+        return currentIsCorrect[i - questionNo]
       } else {
         return v;
       }
@@ -62,14 +58,6 @@ export const App = () => {
       navigate("/question");
     }
   };
-  const goResult = () => {
-    navigate("/result");
-  };
-  const goHome = () => {
-    setQuestions([]);
-    setQuestionNo(0);
-    navigate("/");
-  };
 
   const currentQuestions: QuestionData[] = questions.slice(
     questionNo,
@@ -83,7 +71,7 @@ export const App = () => {
   return (
     <>
       <Header
-        goHome={goHome}
+        goHome={() => navigate("/")}
         questionKazu={questions.length}
         questionStartNo={questionNo}
         questionEndNo={questionNo + currentQuestions.length - 1}
@@ -113,7 +101,7 @@ export const App = () => {
             <Answer
               questions={currentQuestions}
               isCorrect={currentIsCorrect}
-              goOn={goResult}
+              goOn={() => navigate("/result") }
             />
           }
         />

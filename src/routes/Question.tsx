@@ -205,13 +205,21 @@ export const Question = ({
   finished,
 }: {
   questions: QuestionData[];
-  finished: (correctOrWrong: number[]) => void;
+  finished: (currentIsCorrect: boolean[]) => void;
 }) => {
   const [correctOrWrong, setCorrectOrWrong] = React.useState<number[]>(new Array(questions.length).fill(0))
 
   React.useEffect(() => {
     document.getElementById(getQuestionId(0, 0))?.focus();
   }, []);
+
+  const handleClick = () => {
+    const isCorrect: boolean[] = correctOrWrong.map((v) => {
+      if (v > 0) return true;
+      else return false
+    })
+    finished(isCorrect)
+  }
 
   return (
     <>
@@ -221,7 +229,7 @@ export const Question = ({
         setCorrectOrWrong={setCorrectOrWrong}
       />
       <hr></hr>
-      <Button id={finishButtonId} onClick={() => {finished(correctOrWrong)}}>
+      <Button id={finishButtonId} onClick={handleClick}>
         FINISHED
       </Button>
       

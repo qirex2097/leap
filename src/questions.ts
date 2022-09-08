@@ -15,7 +15,6 @@ export type QuestionData = {
   English: string;
   Japanese: string;
   answerPosition: number[][];
-  correctOrWrong: number;
   sectionName: string;
 };
 //----------------------------------------
@@ -222,7 +221,6 @@ export const selectQuestions = (pages: number[]): QuestionData[] => {
     for (const s of currentData[p].sentences) {
       candidateQuestions.push({
         ...s,
-        correctOrWrong: 0,
         sectionName: section,
       });
     }

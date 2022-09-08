@@ -49,53 +49,52 @@ test('getParagraphs', () => {
 
 test('searchAnswersFromQuestion', () => {
     const eng = "You are expected to adapt to changes in social >>norms.<<"
-    const {question, answers} = __local__.searchAnswersFromQuestion(eng);
+    const {question, answerPosition} = __local__.searchAnswersFromQuestion(eng);
 
     expect(question).toBe("You are expected to adapt to changes in social norms.");
-    expect(answers[0][0]).toBe(47);
-    expect(answers[0][1]).toBe(53);
+    expect(answerPosition[0][0]).toBe(47);
+    expect(answerPosition[0][1]).toBe(53);
     expect(question.substring(47,53)).toBe('norms.');
 })
 
 test('searchAnswersFromQuestion 2', () => {
     const eng = "The police >>carried out<< a search of the crime scene."
-    const {question, answers} = __local__.searchAnswersFromQuestion(eng);
+    const {question, answerPosition} = __local__.searchAnswersFromQuestion(eng);
     
     expect(question).toBe("The police carried out a search of the crime scene.");
-    expect(answers[0][0]).toBe(11);
-    expect(answers[0][1]).toBe(18);
-    expect(answers[1][0]).toBe(19);
-    expect(answers[1][1]).toBe(22);
+    expect(answerPosition[0][0]).toBe(11);
+    expect(answerPosition[0][1]).toBe(18);
+    expect(answerPosition[1][0]).toBe(19);
+    expect(answerPosition[1][1]).toBe(22);
 })
 
 test('searchAnswersFromQuestion 3', () => {
     const eng = ">>>Turn off the TV<<< and concentrate on your homework."
-    const {question, answers} = __local__.searchAnswersFromQuestion(eng);
+    const {question, answerPosition} = __local__.searchAnswersFromQuestion(eng);
     
     expect(question).toBe("Turn off the TV and concentrate on your homework.")
-    expect(question.substring(answers[0][0], answers[0][1])).toBe('Turn')
-    expect(question.substring(answers[1][0], answers[1][1])).toBe('off')
-    expect(question.substring(answers[2][0], answers[2][1])).toBe('the')
-    expect(question.substring(answers[3][0], answers[3][1])).toBe('TV')
+    expect(question.substring(answerPosition[0][0], answerPosition[0][1])).toBe('Turn')
+    expect(question.substring(answerPosition[1][0], answerPosition[1][1])).toBe('off')
+    expect(question.substring(answerPosition[2][0], answerPosition[2][1])).toBe('the')
+    expect(question.substring(answerPosition[3][0], answerPosition[3][1])).toBe('TV')
 })
 
 test('searchAnswersFromQuestion 4', () => {
     const eng = ">>>Turn<<< >>>off<<< the TV and concentrate on your homework."
-    const {question, answers} = __local__.searchAnswersFromQuestion(eng);
+    const {question, answerPosition} = __local__.searchAnswersFromQuestion(eng);
 
     expect(question).toBe("Turn off the TV and concentrate on your homework.")
-    expect(question.substring(answers[0][0], answers[0][1])).toBe('Turn')
-    expect(question.substring(answers[1][0], answers[1][1])).toBe('off')
+    expect(question.substring(answerPosition[0][0], answerPosition[0][1])).toBe('Turn')
+    expect(question.substring(answerPosition[1][0], answerPosition[1][1])).toBe('off')
 })
 
 test('divideQuestion', () => {
     const eng = "The police >>carried out<< a search of the crime scene."
-    const {question, answers} = __local__.searchAnswersFromQuestion(eng);
+    const {question, answerPosition} = __local__.searchAnswersFromQuestion(eng);
     const questionData: QuestionData = {
         English: question,
         Japanese: "dummy",
-        answers: answers,
-        correctOrWrong: 0,
+        answerPosition: answerPosition,
         sectionName: 'TEST',
     }
     const token = divideQuestion(questionData)
