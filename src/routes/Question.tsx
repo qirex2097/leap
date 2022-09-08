@@ -7,6 +7,13 @@ import Call from "@mui/icons-material/Call";
 import Button from "@mui/material/Button";
 import { QuestionData, divideQuestion } from "../questions";
 
+const enum ANSWER_RESULT {
+  HINT = -2,
+  WRONG = -1,
+  NONE = 0,
+  CORRECT = 1,
+}
+
 const finishButtonId = "finishButton";
 
 const getQuestionId = (questionNo: number, answerNo: number): string => {
@@ -21,17 +28,13 @@ const QuestionLine = ({
 }: {
   question: QuestionData;
   questionNo: number;
-  correctOrWrong: number;
+  correctOrWrong: ANSWER_RESULT
   setCorrectWrong: (value: number) => void;
 }) => {
   const [nextElement, setNextElement] = React.useState<HTMLElement | null>(
     null
   );
-  const NONE: number = 0;
-  const CORRECT: number = 1;
-  const WRONG: number = -1;
-  const HINT: number = -2;
-  const isHintUsed: boolean = correctOrWrong === HINT;
+  const isHintUsed: boolean = correctOrWrong === ANSWER_RESULT.HINT;
   const answerKazu = question.answerPosition.length;
 
   useEffect(() => {
@@ -39,22 +42,31 @@ const QuestionLine = ({
     setNextElement(null);
   }, [nextElement]);
 
+  const evaluateAnswer = (value: string, answerMoji: string): [string, ANSWER_RESULT] => {
+    let result = ""
+    let correctOrWrong: ANSWER_RESULT = ANSWER_RESULT.NONE;
+    if (isHintUsed) {
+      result = answerMoji
+      correctOrWrong = ANSWER_RESULT.HINT
+    } else if (value.toLowerCase() === answerMoji.toLowerCase()) {
+      result = answerMoji
+      correctOrWrong = ANSWER_RESULT.CORRECT
+    } else {
+      result = value
+      correctOrWrong = ANSWER_RESULT.WRONG
+    }
+    return [result, correctOrWrong]
+  }
+
   const handleBlur = (
     e: React.FocusEvent<HTMLInputElement>,
     answerMoji: string
   ): void => {
     if (e.target.value.length === 0) return;
 
-    if (isHintUsed) {
-      e.target.value = answerMoji;
-    } else if (
-      e.target.value.trim().toLowerCase() === answerMoji.toLowerCase()
-    ) {
-      e.target.value = answerMoji;
-      setCorrectWrong(CORRECT);
-    } else {
-      setCorrectWrong(WRONG);
-    }
+    const [value, result]: [string, ANSWER_RESULT]= evaluateAnswer(e.target.value.trim(), answerMoji)
+    e.target.value = value
+    setCorrectWrong(result)
   };
   const handleFocus = (
     e: React.FocusEvent<HTMLInputElement>,
@@ -65,8 +77,9 @@ const QuestionLine = ({
       return;
     }
 
-    setCorrectWrong(NONE);
+    setCorrectWrong(ANSWER_RESULT.NONE);
   };
+
   const handleChange = (
     e: React.FocusEvent<HTMLInputElement>,
     answerMoji: string,
@@ -82,40 +95,34 @@ const QuestionLine = ({
 
     if (e.target.value.search(/\?/) === 0) {
       e.target.value = answerMoji;
-      setCorrectWrong(HINT);
+      setCorrectWrong(ANSWER_RESULT.HINT);
       setNextElement(nextElement);
     } else if (e.target.value.search(/ $/) >= 0) {
-      if (isHintUsed) {
-        e.target.value = answerMoji;
-      } else if (e.target.value.search(/ /) === 0) {
-        e.target.value = "";
-      } else if (
-        e.target.value.trim().toLowerCase() === answerMoji.toLowerCase()
-      ) {
-        e.target.value = answerMoji;
-        setCorrectWrong(CORRECT);
+      if (e.target.value.search(/ /) === 0) {
+        e.target.value = ""
       } else {
-        e.target.value = e.target.value.trim();
-        setCorrectWrong(WRONG);
+        const [value, result]: [string, number]= evaluateAnswer(e.target.value.trim(), answerMoji)
+        e.target.value = value
+        setCorrectWrong(result)
       }
       setNextElement(nextElement);
     }
   };
 
   let startAdornment: JSX.Element = <></>;
-  if (correctOrWrong === CORRECT) {
+  if (correctOrWrong === ANSWER_RESULT.CORRECT) {
     startAdornment = (
       <InputAdorment position="start">
         <Check />
       </InputAdorment>
     );
-  } else if (correctOrWrong === WRONG) {
+  } else if (correctOrWrong === ANSWER_RESULT.WRONG) {
     startAdornment = (
       <InputAdorment position="start">
         <Clear />
       </InputAdorment>
     );
-  } else if (correctOrWrong === HINT) {
+  } else if (correctOrWrong === ANSWER_RESULT.HINT) {
     startAdornment = (
       <InputAdorment position="start">
         <Call />
@@ -207,7 +214,7 @@ export const Question = ({
   questions: QuestionData[];
   finished: (currentIsCorrect: boolean[]) => void;
 }) => {
-  const [correctOrWrong, setCorrectOrWrong] = React.useState<number[]>(new Array(questions.length).fill(0))
+  const [correctOrWrong, setCorrectOrWrong] = React.useState<ANSWER_RESULT[]>(new Array(questions.length).fill(0))
 
   React.useEffect(() => {
     document.getElementById(getQuestionId(0, 0))?.focus();
