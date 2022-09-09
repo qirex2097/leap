@@ -5,7 +5,7 @@ import Check from "@mui/icons-material/Check";
 import Clear from "@mui/icons-material/Clear";
 import Call from "@mui/icons-material/Call";
 import Button from "@mui/material/Button";
-import { QuestionData, divideQuestion } from "../questions";
+import { QuestionData, divideQuestion, getAnswers } from "../questions";
 
 const enum ANSWER_RESULT {
   HINT = -2,
@@ -28,7 +28,7 @@ const QuestionLine = ({
 }: {
   question: QuestionData;
   questionNo: number;
-  correctOrWrong: ANSWER_RESULT
+  correctOrWrong: ANSWER_RESULT;
   setCorrectWrong: (value: number) => void;
 }) => {
   const [nextElement, setNextElement] = React.useState<HTMLElement | null>(
@@ -42,31 +42,50 @@ const QuestionLine = ({
     setNextElement(null);
   }, [nextElement]);
 
-  const evaluateAnswer = (value: string, answerMoji: string): [string, ANSWER_RESULT] => {
-    let result = ""
-    let correctOrWrong: ANSWER_RESULT = ANSWER_RESULT.NONE;
-    if (isHintUsed) {
-      result = answerMoji
-      correctOrWrong = ANSWER_RESULT.HINT
-    } else if (value.toLowerCase() === answerMoji.toLowerCase()) {
-      result = answerMoji
-      correctOrWrong = ANSWER_RESULT.CORRECT
-    } else {
-      result = value
-      correctOrWrong = ANSWER_RESULT.WRONG
+  const getInputValues = (): string[] => {
+    let values: string[] = []
+    for (let i = 0; i < answerKazu; i++) {
+      const value = (document.getElementById(getQuestionId(questionNo, i)) as HTMLInputElement)?.value
+      values = [...values, value]
     }
-    return [result, correctOrWrong]
+    return values
   }
+  const setInputValues = (answerMojiList: string[]): void => {
+    for (let i = 0; i < answerKazu; i++) {
+      const element = document.getElementById(getQuestionId(questionNo, i)) as HTMLInputElement
+      const answerMoji: string = answerMojiList[i].match(/[a-zA-Z\-']+/)?.[0] || "";
+      element.value = answerMoji
+    }
+  }
+  const evaluateAnswer = (): ANSWER_RESULT => {
+    let correctOrWrong: ANSWER_RESULT = ANSWER_RESULT.NONE;
+
+    if (isHintUsed) {
+      correctOrWrong = ANSWER_RESULT.HINT;
+    } else {
+      const inputValueList: string[] = getInputValues();
+      const answerMojiList: string[] = getAnswers(question)
+
+      if (inputValueList.some(v => v.length === 0)) {
+        correctOrWrong = ANSWER_RESULT.NONE;
+      } else if (inputValueList.every((v, i) => v.trim().toLowerCase() === answerMojiList[i].match(/[a-zA-Z\-']+/)?.[0].toLowerCase())) {
+        setInputValues(answerMojiList)
+        correctOrWrong = ANSWER_RESULT.CORRECT;
+      } else {
+        correctOrWrong = ANSWER_RESULT.WRONG;
+      }
+    }
+
+    return correctOrWrong;
+  };
 
   const handleBlur = (
     e: React.FocusEvent<HTMLInputElement>,
-    answerMoji: string
   ): void => {
     if (e.target.value.length === 0) return;
 
-    const [value, result]: [string, ANSWER_RESULT]= evaluateAnswer(e.target.value.trim(), answerMoji)
-    e.target.value = value
-    setCorrectWrong(result)
+    const result: ANSWER_RESULT  = evaluateAnswer();
+    setCorrectWrong(result);
   };
   const handleFocus = (
     e: React.FocusEvent<HTMLInputElement>,
@@ -94,40 +113,46 @@ const QuestionLine = ({
       document.getElementById(finishButtonId);
 
     if (e.target.value.search(/\?/) === 0) {
-      e.target.value = answerMoji;
+      const hintNextElement = document.getElementById(getQuestionId(questionNo + 1, 0)) || document.getElementById(finishButtonId)
+      setInputValues(getAnswers(question))
       setCorrectWrong(ANSWER_RESULT.HINT);
-      setNextElement(nextElement);
+      setNextElement(hintNextElement);
     } else if (e.target.value.search(/ $/) >= 0) {
       if (e.target.value.search(/ /) === 0) {
-        e.target.value = ""
+        e.target.value = "";
       } else {
-        const [value, result]: [string, number]= evaluateAnswer(e.target.value.trim(), answerMoji)
-        e.target.value = value
-        setCorrectWrong(result)
+        const result: ANSWER_RESULT = evaluateAnswer();
+        setCorrectWrong(result);
       }
       setNextElement(nextElement);
     }
   };
 
   let startAdornment: JSX.Element = <></>;
-  if (correctOrWrong === ANSWER_RESULT.CORRECT) {
-    startAdornment = (
-      <InputAdorment position="start">
-        <Check />
-      </InputAdorment>
-    );
-  } else if (correctOrWrong === ANSWER_RESULT.WRONG) {
-    startAdornment = (
-      <InputAdorment position="start">
-        <Clear />
-      </InputAdorment>
-    );
-  } else if (correctOrWrong === ANSWER_RESULT.HINT) {
-    startAdornment = (
-      <InputAdorment position="start">
-        <Call />
-      </InputAdorment>
-    );
+  switch (correctOrWrong) {
+    case ANSWER_RESULT.CORRECT:
+      startAdornment = (
+        <InputAdorment position="start">
+          <Check />
+        </InputAdorment>
+      );
+      break;
+    case ANSWER_RESULT.WRONG:
+      startAdornment = (
+        <InputAdorment position="start">
+          <Clear />
+        </InputAdorment>
+      );
+      break;
+    case ANSWER_RESULT.HINT:
+      startAdornment = (
+        <InputAdorment position="start">
+          <Call />
+        </InputAdorment>
+      );
+      break;
+    default:
+      startAdornment = <></>;
   }
 
   const token: string[] = divideQuestion(question);
@@ -147,7 +172,7 @@ const QuestionLine = ({
             color="secondary"
             id={getQuestionId(questionNo, answerNo)}
             onBlur={(e: React.FocusEvent<HTMLInputElement>) =>
-              handleBlur(e, answerMoji)
+              handleBlur(e)
             }
             onFocus={(e: React.FocusEvent<HTMLInputElement>) =>
               handleFocus(e, answerMoji)
@@ -180,15 +205,19 @@ const Questions = ({
   setCorrectOrWrong,
 }: {
   questions: QuestionData[];
-  correctOrWrong: number[]
-  setCorrectOrWrong: (correctOrWrong: number[]) => void
+  correctOrWrong: number[];
+  setCorrectOrWrong: (correctOrWrong: number[]) => void;
 }) => {
   const updateCorrectOrWrong = (idx: number, state: number) => {
     const newCorrectOrWrong = correctOrWrong.map((v, i) => {
-      if (i === idx) { return state } else { return v }
-    })
-    setCorrectOrWrong(newCorrectOrWrong)
-  }
+      if (i === idx) {
+        return state;
+      } else {
+        return v;
+      }
+    });
+    setCorrectOrWrong(newCorrectOrWrong);
+  };
 
   return (
     <>
@@ -214,7 +243,9 @@ export const Question = ({
   questions: QuestionData[];
   finished: (currentIsCorrect: boolean[]) => void;
 }) => {
-  const [correctOrWrong, setCorrectOrWrong] = React.useState<ANSWER_RESULT[]>(new Array(questions.length).fill(0))
+  const [correctOrWrong, setCorrectOrWrong] = React.useState<ANSWER_RESULT[]>(
+    new Array(questions.length).fill(0)
+  );
 
   React.useEffect(() => {
     document.getElementById(getQuestionId(0, 0))?.focus();
@@ -223,10 +254,10 @@ export const Question = ({
   const handleClick = () => {
     const isCorrect: boolean[] = correctOrWrong.map((v) => {
       if (v > 0) return true;
-      else return false
-    })
-    finished(isCorrect)
-  }
+      else return false;
+    });
+    finished(isCorrect);
+  };
 
   return (
     <>
@@ -239,8 +270,11 @@ export const Question = ({
       <Button id={finishButtonId} onClick={handleClick}>
         FINISHED
       </Button>
-      
-      {correctOrWrong.reduce((prev, state) => {if (state > 0) prev += 1; return prev}, 0)}{" "}/ {questions.length}
+      {correctOrWrong.reduce((prev, state) => {
+        if (state > 0) prev += 1;
+        return prev;
+      }, 0)}{" "}
+      / {questions.length}
     </>
   );
 };

@@ -37,6 +37,15 @@ const divideQuestionLocal = (
 export const divideQuestion = (question: QuestionData): string[] => {
   return divideQuestionLocal(question.English, question.answerPosition);
 };
+export const getAnswers = (question: QuestionData): string[] => {
+  const eng = question.English;
+  const answerPosition = question.answerPosition;
+  let token: string[] = [];
+  for (const answer of answerPosition) {
+    token.push(eng.substring(answer[0], answer[1]));
+  }
+  return token;
+};
 
 const searchAnswersFromQuestion = (
   buff: string
