@@ -4,9 +4,8 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import {
-  SectionData,
-  addSectionDataFromFile,
   QuestionData,
+  addSectionDataFromFile,
   getCurrentSectionData,
   selectQuestions,
   getSelectedSections,
@@ -58,9 +57,8 @@ export const Home = ({
 }: {
   start: (newQuestionData: QuestionData[]) => void;
 }): JSX.Element => {
-  const sectionData: SectionData[] = getCurrentSectionData();
   const [labels, setLabels] = React.useState<Label[]>(
-    sectionData.map((v, i) => {
+    getCurrentSectionData().map((v, i) => {
       const filename = v.filename || "no name";
       return {
         label: `${filename}`,

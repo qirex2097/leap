@@ -87,12 +87,12 @@ const QuestionLine = ({
     const result: ANSWER_RESULT  = evaluateAnswer();
     setCorrectWrong(result);
   };
+
   const handleFocus = (
     e: React.FocusEvent<HTMLInputElement>,
-    answerMoji: string
   ) => {
     if (isHintUsed) {
-      e.target.value = answerMoji;
+      setInputValues(getAnswers(question))
       return;
     }
 
@@ -101,7 +101,6 @@ const QuestionLine = ({
 
   const handleChange = (
     e: React.FocusEvent<HTMLInputElement>,
-    answerMoji: string,
     answerNo: number
   ): void => {
     const isLastAnswer: boolean = answerKazu <= answerNo + 1;
@@ -121,6 +120,7 @@ const QuestionLine = ({
       if (e.target.value.search(/ /) === 0) {
         e.target.value = "";
       } else {
+        e.target.value = e.target.value.trim()
         const result: ANSWER_RESULT = evaluateAnswer();
         setCorrectWrong(result);
       }
@@ -162,7 +162,6 @@ const QuestionLine = ({
     } else {
       const answer = partOfEnglish;
       const separater: string = answer.match(/[?.,:;]$/)?.[0] || "";
-      const answerMoji: string = answer.match(/[a-zA-Z\-']+/)?.[0] || "";
       const answerNo: number = Math.floor(i / 2);
 
       return (
@@ -175,10 +174,10 @@ const QuestionLine = ({
               handleBlur(e)
             }
             onFocus={(e: React.FocusEvent<HTMLInputElement>) =>
-              handleFocus(e, answerMoji)
+              handleFocus(e)
             }
             onChange={(e: React.FocusEvent<HTMLInputElement>) =>
-              handleChange(e, answerMoji, answerNo)
+              handleChange(e, answerNo)
             }
             style={{ width: answer.length * 16 + 24, fontSize: "100%" }}
             autoComplete="off"
