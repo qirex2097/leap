@@ -163,23 +163,20 @@ const QuestionLine = ({
       const answer = partOfEnglish;
       const separater: string = answer.match(/[?.,:;]$/)?.[0] || "";
       const answerNo: number = Math.floor(i / 2);
+      const id: string = getQuestionId(questionNo, answerNo)
 
       return (
         <span key={i}>
           <Input
             type="text"
             color="secondary"
-            id={getQuestionId(questionNo, answerNo)}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) =>
-              handleBlur(e)
-            }
-            onFocus={(e: React.FocusEvent<HTMLInputElement>) =>
-              handleFocus(e)
-            }
+            id={id}
+            onBlur={handleBlur}
+            onFocus={handleFocus}
             onChange={(e: React.FocusEvent<HTMLInputElement>) =>
               handleChange(e, answerNo)
             }
-            style={{ width: answer.length * 16 + 24, fontSize: "100%" }}
+            style={{ width: `${answer.length}em`, height: "1.5em", fontSize: "100%" }}
             autoComplete="off"
             startAdornment={startAdornment}
           />
