@@ -1,9 +1,4 @@
 import React, { useEffect } from "react";
-import Input from "@mui/material/Input";
-import InputAdorment from "@mui/material/InputAdornment";
-import Check from "@mui/icons-material/Check";
-import Clear from "@mui/icons-material/Clear";
-import Call from "@mui/icons-material/Call";
 import Button from "@mui/material/Button";
 import { QuestionData, divideQuestion, getAnswers } from "../questions";
 
@@ -84,7 +79,7 @@ const QuestionLine = ({
   ): void => {
     if (e.target.value.length === 0) return;
 
-    const result: ANSWER_RESULT  = evaluateAnswer();
+    const result: ANSWER_RESULT = evaluateAnswer();
     setCorrectWrong(result);
   };
 
@@ -128,31 +123,24 @@ const QuestionLine = ({
     }
   };
 
-  let startAdornment: JSX.Element = <></>;
+  let color: string = 'black'
+  let before: string = ''
   switch (correctOrWrong) {
     case ANSWER_RESULT.CORRECT:
-      startAdornment = (
-        <InputAdorment position="start">
-          <Check />
-        </InputAdorment>
-      );
+      color = 'blue'
+      before = '○'
       break;
     case ANSWER_RESULT.WRONG:
-      startAdornment = (
-        <InputAdorment position="start">
-          <Clear />
-        </InputAdorment>
-      );
+      color = 'red'
+      before = '×'
       break;
     case ANSWER_RESULT.HINT:
-      startAdornment = (
-        <InputAdorment position="start">
-          <Call />
-        </InputAdorment>
-      );
+      color = 'pink'
+      before = '？'
       break;
     default:
-      startAdornment = <></>;
+      color = 'black'
+      break;
   }
 
   const token: string[] = divideQuestion(question);
@@ -167,7 +155,8 @@ const QuestionLine = ({
 
       return (
         <span key={i}>
-          <Input
+          {before}
+          <input
             type="text"
             color="secondary"
             id={id}
@@ -176,9 +165,8 @@ const QuestionLine = ({
             onChange={(e: React.FocusEvent<HTMLInputElement>) =>
               handleChange(e, answerNo)
             }
-            style={{ width: `${answer.length}em`, height: "1.5em", fontSize: "100%" }}
+            style={{ width: `${answer.length + 2}em`, height: '1.5em', fontSize: "100%", color: color, border: "none", outline: "none", borderBottom: `solid 1px black` }}
             autoComplete="off"
-            startAdornment={startAdornment}
           />
           {separater}
         </span>
