@@ -135,7 +135,7 @@ const QuestionLine = ({
       before = '×'
       break;
     case ANSWER_RESULT.HINT:
-      color = 'pink'
+      color = 'purple'
       before = '？'
       break;
     default:
