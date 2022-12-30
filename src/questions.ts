@@ -113,45 +113,41 @@ const getParagraphs = (lines: string[]): string[] => {
   return paragraphs;
 };
 
-const getAnswer = (English: string, word: string): string => {
-  let answer: string = "";
-  for (const w of English.split(" ")) {
-    if (w.toLowerCase().search(word.toLowerCase()) >= 0) {
-      answer = w;
-    }
-  }
-
-  return answer;
-};
-
 const getSentences = (text: string): Sentence[] => {
   let sentences: Sentence[] = [];
 
   const paragraphs: string[] = getParagraphs(text.split(/\r\n|\n|\r/));
   for (const para of paragraphs) {
     const [eng, jpn, word]: string[] = para.split("\n");
+    let eng2: string = eng;
     if (word) {
-      const answer: string = getAnswer(eng, word);
-      if (answer.length > 0) {
-        const p0: number = eng.search(answer);
-        const p1: number = p0 + answer.length;
-        sentences.push({
-          English: eng,
-          Japanese: jpn,
-          answerPosition: [[p0, p1]],
-        });
+      const p0: number = eng.toLowerCase().search(word.trim().toLowerCase());
+      if (p0 >= 0) {
+        const p1: number =
+          p0 +
+          word.trim().length +
+          eng.substring(p0 + word.trim().length).search(/[ ,.]|$/);
+
+        const token: string[] = divideQuestionLocal(eng, [[p0, p1]]);
+        eng2 = "";
+        for (let i = 0; i < token.length; i++) {
+          if (i % 2 === 1) {
+            eng2 = eng2 + ">>>" + token[i] + "<<<";
+          } else {
+            eng2 = eng2 + token[i];
+          }
+        }
       } else {
         console.log(`getSentences: ${eng}, ${word}`);
       }
-    } else {
-      const { question, answerPosition } = searchAnswersFromQuestion(eng);
-
-      sentences.push({
-        English: question,
-        Japanese: jpn,
-        answerPosition: answerPosition,
-      });
     }
+    const { question, answerPosition } = searchAnswersFromQuestion(eng2);
+
+    sentences.push({
+      English: question,
+      Japanese: jpn,
+      answerPosition: answerPosition,
+    });
   }
 
   return sentences;
