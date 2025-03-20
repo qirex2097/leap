@@ -106,7 +106,7 @@ const QuestionLine = ({
       document.getElementById(nextElementId) ||
       document.getElementById(finishButtonId);
 
-    if (e.target.value.search(/\?/) === 0) {
+    if (e.target.value.search(/\?/) >= 0) {
       const hintNextElement = document.getElementById(getQuestionId(questionNo + 1, 0)) || document.getElementById(finishButtonId)
       setInputValues(getAnswers(question))
       setCorrectWrong(ANSWER_RESULT.HINT);
