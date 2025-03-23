@@ -11,10 +11,19 @@ import { Result } from "../routes/Result";
 
 const QUESTION_KAZU: number = 10;
 
+// 間違えた問題の履歴を保存する型
+export type WrongQuestionHistory = {
+  date: Date;
+  wrongQuestions: QuestionData[];
+  totalQuestions: number;
+};
+
 export const App = () => {
   const [questions, setQuestions] = React.useState<QuestionData[]>([]);
   const [questionNo, setQuestionNo] = React.useState<number>(0);
   const [isCorrect, setIsCorrect] = React.useState<boolean[]>([]);
+  // 間違えた問題の履歴を保存する状態
+  const [wrongQuestionHistory, setWrongQuestionHistory] = React.useState<WrongQuestionHistory[]>([]);
   const navigate = useNavigate();
 
   const start = (newQuestions: QuestionData[]) => {
@@ -25,6 +34,16 @@ export const App = () => {
   };
 
   const retry = (retryQuestions: QuestionData[]) => {
+    // 間違えた問題の履歴を保存
+    if (retryQuestions.length > 0) {
+      const newHistory: WrongQuestionHistory = {
+        date: new Date(),
+        wrongQuestions: [...retryQuestions],
+        totalQuestions: questions.length
+      };
+      setWrongQuestionHistory([...wrongQuestionHistory, newHistory]);
+    }
+
     if (retryQuestions.length === 0) {
       navigate("/");
     } else {
@@ -78,7 +97,7 @@ export const App = () => {
       />
       <hr></hr>
       <Routes>
-        <Route path="/" element={<Home start={start} />} />
+        <Route path="/" element={<Home start={start} wrongQuestionHistory={wrongQuestionHistory} />} />
         <Route
           path="/question"
           element={

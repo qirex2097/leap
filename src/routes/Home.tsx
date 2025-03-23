@@ -3,6 +3,11 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   QuestionData,
   addSectionDataFromFile,
@@ -11,6 +16,8 @@ import {
   getSelectedSections,
 } from "../questions";
 import { DropQuestions } from "../components/DropQuestions";
+import { WrongQuestionHistory } from "../components/App";
+import { ShowQuestions } from "../components/ShowQuestions";
 
 type Label = {
   label: string;
@@ -54,8 +61,10 @@ const QuestionList = ({
 
 export const Home = ({
   start,
+  wrongQuestionHistory,
 }: {
   start: (newQuestionData: QuestionData[]) => void;
+  wrongQuestionHistory: WrongQuestionHistory[];
 }): JSX.Element => {
   const [labels, setLabels] = React.useState<Label[]>(
     getCurrentSectionData().map((v, i) => {
@@ -115,6 +124,45 @@ export const Home = ({
       <Button onClick={questionStart}>START</Button>
       <Button onClick={reset}>RESET</Button>
       <DropQuestions onLoad={updateLabels} />
+      
+      {/* 間違えた問題の履歴を表示 */}
+      {wrongQuestionHistory.length > 0 && (
+        <div style={{ marginTop: '30px' }}>
+          <Typography variant="h5" component="h2">
+            間違えた問題の履歴
+          </Typography>
+          
+          {wrongQuestionHistory.map((history, index) => (
+            <Accordion key={index}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls={`panel${index}-content`}
+                id={`panel${index}-header`}
+              >
+                <Typography>
+                  {history.date.toLocaleString()} - 
+                  間違えた問題: {history.wrongQuestions.length} / {history.totalQuestions}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                {/* 間違えた問題の詳細を表示 */}
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls={`panel${index}-details-content`}
+                    id={`panel${index}-details-header`}
+                  >
+                    <Typography>問題の詳細を表示</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <ShowQuestions questions={history.wrongQuestions} />
+                  </AccordionDetails>
+                </Accordion>
+              </AccordionDetails>
+            </Accordion>
+          ))}
+        </div>
+      )}
     </>
   );
 };
