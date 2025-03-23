@@ -1,3 +1,6 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:latest"
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:latest",
+  "mounts": [
+      "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached"
+  ]
 }
