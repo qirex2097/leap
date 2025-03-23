@@ -145,19 +145,7 @@ export const Home = ({
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
-                {/* 間違えた問題の詳細を表示 */}
-                <Accordion>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls={`panel${index}-details-content`}
-                    id={`panel${index}-details-header`}
-                  >
-                    <Typography>問題の詳細を表示</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <ShowQuestions questions={history.wrongQuestions} />
-                  </AccordionDetails>
-                </Accordion>
+                {/* 間違えた問題の履歴のみ表示 */}
               </AccordionDetails>
             </Accordion>
           ))}

@@ -25,6 +25,5 @@ export const ShowQuestions = ({ questions }: { questions: QuestionData[] }) => {
             value={value}
             style={{ width: "100%" }}
         />
-        <Button onClick={() => navigator.clipboard.writeText(value)}>COPY</Button>
     </div>);
 }
