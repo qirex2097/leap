@@ -125,32 +125,6 @@ export const Home = ({
       <Button onClick={reset}>RESET</Button>
       <DropQuestions onLoad={updateLabels} />
       
-      {/* 間違えた問題の履歴を表示 */}
-      {wrongQuestionHistory.length > 0 && (
-        <div style={{ marginTop: '30px' }}>
-          <Typography variant="h5" component="h2">
-            間違えた問題の履歴
-          </Typography>
-          
-          {wrongQuestionHistory.map((history, index) => (
-            <Accordion key={index}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls={`panel${index}-content`}
-                id={`panel${index}-header`}
-              >
-                <Typography>
-                  {history.date.toLocaleString()} - 
-                  間違えた問題: {history.wrongQuestions.length} / {history.totalQuestions}
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                {/* 間違えた問題の履歴のみ表示 */}
-              </AccordionDetails>
-            </Accordion>
-          ))}
-        </div>
-      )}
     </>
   );
 };
