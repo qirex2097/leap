@@ -1,5 +1,5 @@
 import Button from "@mui/material/Button";
-import { QuestionData } from "../questions";
+import { QuestionData, getAnswers, divideQuestion } from "../questions";
 import { ShowQuestions } from "../components/ShowQuestions";
 
 export const Result = ({
@@ -31,7 +31,28 @@ export const Result = ({
       <Button onClick={() => retry(wrongQuestions)} autoFocus={true}>
         {message}
       </Button>
-      {wrongQuestions.length !== 0 && <ShowQuestions questions={wrongQuestions} />}
+      
+      {wrongQuestions.length > 0 && (
+        <div style={{ marginTop: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {wrongQuestions.map((question, index) => {
+              const parts = divideQuestion(question);
+              return (
+                <div key={index}>
+                  {parts.map((part, partIndex) => (
+                    <span key={partIndex} style={{ 
+                      fontWeight: partIndex % 2 === 1 ? 'bold' : 'normal',
+                      backgroundColor: partIndex % 2 === 1 ? '#ffeeee' : 'transparent'
+                    }}>
+                      {part}
+                    </span>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </>
   );
 };

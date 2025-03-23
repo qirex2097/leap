@@ -3,6 +3,11 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   QuestionData,
   addSectionDataFromFile,
@@ -11,6 +16,8 @@ import {
   getSelectedSections,
 } from "../questions";
 import { DropQuestions } from "../components/DropQuestions";
+import { WrongQuestionHistory } from "../components/App";
+import { ShowQuestions } from "../components/ShowQuestions";
 
 type Label = {
   label: string;
@@ -54,8 +61,10 @@ const QuestionList = ({
 
 export const Home = ({
   start,
+  wrongQuestionHistory,
 }: {
   start: (newQuestionData: QuestionData[]) => void;
+  wrongQuestionHistory: WrongQuestionHistory[];
 }): JSX.Element => {
   const [labels, setLabels] = React.useState<Label[]>(
     getCurrentSectionData().map((v, i) => {
@@ -115,6 +124,7 @@ export const Home = ({
       <Button onClick={questionStart}>START</Button>
       <Button onClick={reset}>RESET</Button>
       <DropQuestions onLoad={updateLabels} />
+      
     </>
   );
 };
