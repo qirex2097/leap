@@ -108,7 +108,7 @@ export const Home = ({
     }
     // フラグをリセット
     sessionStorage.removeItem('wasSelectSequentialCalled');
-  }, []);
+  }, [labels]);
 
   const questionStart = () => {
     const selectedSections: number[] = labels
