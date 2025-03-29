@@ -75,6 +75,20 @@ const updateSequentialLabels = (labels: Label[], lastCheckedIdx: number): Label[
   }));
 };
 
+const areAllLabelsSelected = (labels: Label[]): boolean => {
+  return labels.every((v) => v.checked);
+};
+
+// ラベルを生成するユーティリティ関数
+const generateLabels = (): Label[] => {
+  return getCurrentSectionData().map((v, i) => ({
+    label: v.filename || "no name",
+    checked: false,
+    group: v.group,
+    idx: i,
+  }));
+};
+
 export const Home = ({
   start,
   wrongQuestionHistory,
@@ -86,14 +100,13 @@ export const Home = ({
 }): JSX.Element => {
   const nextButtonRef = useRef<HTMLButtonElement>(null);
 
-  const [labels, setLabels] = React.useState<Label[]>(
-    getCurrentSectionData().map((v, i) => ({
-      label: v.filename || "no name",
+  const [labels, setLabels] = React.useState<Label[]>(() => {
+    const initialLabels = generateLabels();
+    return initialLabels.map((label, i) => ({
+      ...label,
       checked: getSelectedSections().includes(i),
-      group: v.group,
-      idx: i,
-    }))
-  );
+    }));
+  });
 
   useEffect(() => {
     const wasSelectSequentialCalled =
@@ -122,13 +135,7 @@ export const Home = ({
 
   const updateLabels = (filename: string, result: string, group: string): void => {
     addSectionDataFromFile(filename, result, group);
-    const newLabels = getCurrentSectionData().map((v, i) => ({
-      label: v.filename || "no name",
-      checked: false,
-      group: v.group,
-      idx: i,
-    }));
-    setLabels(newLabels);
+    setLabels(generateLabels());
   };
 
   const handleChange = (idx: number, checked: boolean) => {
@@ -138,8 +145,10 @@ export const Home = ({
   };
 
   const resetOrSelectAll = () => {
-    const allSelected = labels.every((v) => v.checked);
-    setLabels(labels.map((v) => ({ ...v, checked: !allSelected })));
+    const allSelected = areAllLabelsSelected(labels);
+    setLabels((prevLabels) =>
+      prevLabels.map((v) => ({ ...v, checked: !allSelected }))
+    );
   };
 
   const selectSequential = () => {
