@@ -180,8 +180,8 @@ export const Home = ({
   // 選択された単語の状態
   const [selectedWordIndex, setSelectedWordIndex] = React.useState<number | null>(null);
 
-  // すべての履歴から間違えた問題を抽出し、問題ごとに単語を結合
-  const wrongWordsWithQuestions = wrongQuestionHistory.flatMap(history => 
+  // すべての履歴から間違えた単語を抽出
+  const allWrongWords = wrongQuestionHistory.flatMap(history => 
     history.wrongQuestions.map(question => {
       // 同じ問題から抽出された単語を空白で結合
       return {
@@ -191,9 +191,18 @@ export const Home = ({
     })
   );
   
-  // 重複する単語を削除（同じ結合単語を持つ最初の問題のみ残す）
-  const uniqueWrongWordsWithQuestions = wrongWordsWithQuestions.reduce((acc, current) => {
-    if (!acc.some(item => item.combinedWord === current.combinedWord)) {
+  // 単語の出現回数をカウント
+  const wordCounts = allWrongWords.reduce((counts, item) => {
+    const { combinedWord } = item;
+    counts[combinedWord] = (counts[combinedWord] || 0) + 1;
+    return counts;
+  }, {} as Record<string, number>);
+  
+  // 2回以上間違えた単語のみをフィルタリング
+  const repeatedWrongWordsWithQuestions = allWrongWords.reduce((acc, current) => {
+    const { combinedWord } = current;
+    // 2回以上出現し、まだ追加されていない単語のみを追加
+    if (wordCounts[combinedWord] >= 2 && !acc.some(item => item.combinedWord === combinedWord)) {
       acc.push(current);
     }
     return acc;
@@ -221,14 +230,14 @@ export const Home = ({
       </div>
       <DropQuestions onLoad={updateLabels} />
       
-      {/* 間違えた単語がある場合のみ表示 */}
-      {uniqueWrongWordsWithQuestions.length > 0 && (
+      {/* 2回以上間違えた単語がある場合のみ表示 */}
+      {repeatedWrongWordsWithQuestions.length > 0 && (
         <div style={{ marginTop: 2 }}>
           <Typography variant="h6" component="h3" gutterBottom>
-            間違えた単語一覧
+            2回以上間違えた単語一覧
           </Typography>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {uniqueWrongWordsWithQuestions.map((item, index) => (
+            {repeatedWrongWordsWithQuestions.map((item, index) => (
               <Chip
                 key={index}
                 label={item.combinedWord}
@@ -242,7 +251,7 @@ export const Home = ({
           </div>
           
           {/* 選択された単語の問題と英文を表示 */}
-          {selectedWordIndex !== null && (
+          {selectedWordIndex !== null && repeatedWrongWordsWithQuestions[selectedWordIndex] && (
             <div 
               style={{ 
                 marginTop: '16px', 
@@ -253,13 +262,13 @@ export const Home = ({
               }}
             >
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                {uniqueWrongWordsWithQuestions[selectedWordIndex].question.sectionName}
+                {repeatedWrongWordsWithQuestions[selectedWordIndex].question.sectionName}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                {uniqueWrongWordsWithQuestions[selectedWordIndex].question.Japanese}
+                {repeatedWrongWordsWithQuestions[selectedWordIndex].question.Japanese}
               </Typography>
               <div>
-                {divideQuestion(uniqueWrongWordsWithQuestions[selectedWordIndex].question).map((part: string, partIndex: number) => (
+                {divideQuestion(repeatedWrongWordsWithQuestions[selectedWordIndex].question).map((part: string, partIndex: number) => (
                   <span 
                     key={partIndex} 
                     style={{ 
