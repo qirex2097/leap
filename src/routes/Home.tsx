@@ -3,11 +3,6 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   QuestionData,
   addSectionDataFromFile,
@@ -17,7 +12,6 @@ import {
 } from "../questions";
 import { DropQuestions } from "../components/DropQuestions";
 import { WrongQuestionHistory } from "../components/App";
-import { ShowQuestions } from "../components/ShowQuestions";
 import { ShowWrongWords } from "../components/ShowWrongWords";
 
 type Label = {
@@ -88,7 +82,7 @@ export const Home = ({
   // コンポーネントがマウントされたときに実行
   useEffect(() => {
     // ローカルストレージから前回selectSequentialが呼ばれたかどうかを確認
-    const wasSelectSequentialCalled = localStorage.getItem('wasSelectSequentialCalled') === 'true';
+    const wasSelectSequentialCalled = sessionStorage.getItem('wasSelectSequentialCalled') === 'true';
     if (!wasSelectSequentialCalled) return;
     
     // 現在チェックされている問題を取得
@@ -113,7 +107,7 @@ export const Home = ({
       nextButtonRef.current?.focus();
     }
     // フラグをリセット
-    localStorage.removeItem('wasSelectSequentialCalled');
+    sessionStorage.removeItem('wasSelectSequentialCalled');
   }, []);
 
   const questionStart = () => {
@@ -177,7 +171,7 @@ export const Home = ({
       .filter(idx => idx !== -1);
 
     // selectSequentialが呼ばれたことをローカルストレージに記録
-    localStorage.setItem('wasSelectSequentialCalled', 'true');
+    sessionStorage.setItem('wasSelectSequentialCalled', 'true');
     
     if (selectedSections.length === 0) {
       if (labels.length >= 2) {
