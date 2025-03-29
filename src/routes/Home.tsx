@@ -69,9 +69,6 @@ export const Home = ({
   wrongQuestionHistory: WrongQuestionHistory[];
   resetWrongQuestionHistory: () => void;
 }): JSX.Element => {
-  // 問題の選択回数を保存する状態
-  const [selectionCounts, setSelectionCounts] = React.useState<Record<number, number>>({});
-
   const [labels, setLabels] = React.useState<Label[]>(
     getCurrentSectionData().map((v, i) => {
       const filename = v.filename || "no name";
@@ -92,18 +89,6 @@ export const Home = ({
         else return -1;
       })
       .filter((v) => v >= 0);
-    
-    // 選択回数を更新
-    const newCounts = { ...selectionCounts };
-    selectedSections.forEach(idx => {
-      newCounts[idx] = (newCounts[idx] || 0) + 1;
-    });
-    
-    // 選択回数を更新
-    setSelectionCounts(newCounts);
-    
-    // デバッグ用：選択回数を確認
-    console.log("Selection counts updated from START:", newCounts);
     
     start(selectQuestions(selectedSections));
   };
@@ -141,8 +126,6 @@ export const Home = ({
         })
       );
       
-      // 選択回数もリセット
-      setSelectionCounts({});
     } else {
       // 一つでも未選択があればすべて選択
       setLabels(
@@ -154,6 +137,22 @@ export const Home = ({
   };
 
   const selectSequential = () => {
+    // 現在チェックされている問題を取得
+    const checkedIndices = labels
+      .map((v, i) => v.checked ? i : -1)
+      .filter(idx => idx !== -1);
+    
+    // 最初（インデックス0）と最後（labels.length - 1）の問題がチェックされているかチェック
+    if (checkedIndices.includes(0) && checkedIndices.includes(labels.length - 1)) {
+      // 最初と最後の問題がチェックされている場合、チェックをクリアして終了
+      setLabels(
+        labels.map((v) => {
+          return { ...v, checked: false };
+        })
+      );
+      return; // start関数を呼ばずに終了
+    }
+    
     // すべてを一度リセット
     const resetLabels = labels.map((v) => {
       return { ...v, checked: false };
@@ -161,11 +160,6 @@ export const Home = ({
     
     // 選択するインデックスを格納する配列
     const selectedIndices: number[] = [];
-    
-    // 現在チェックされている問題を取得
-    const checkedIndices = labels
-      .map((v, i) => v.checked ? i : -1)
-      .filter(idx => idx !== -1);
     
     if (checkedIndices.length > 0) {
       // チェックされている問題のうち最も最後のものを取得
@@ -197,18 +191,6 @@ export const Home = ({
       return v;
     });
     
-    // 選択回数を更新
-    const newCounts = { ...selectionCounts };
-    selectedIndices.forEach(idx => {
-      newCounts[idx] = (newCounts[idx] || 0) + 1;
-    });
-    
-    // 選択回数を更新
-    setSelectionCounts(newCounts);
-    
-    // デバッグ用：選択回数を確認
-    console.log("Selection counts updated:", newCounts);
-   
     // ラベルを更新
     setLabels(newLabels);
     
