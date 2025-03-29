@@ -91,8 +91,62 @@ export const Home = ({
     const wasSelectSequentialCalled = localStorage.getItem('wasSelectSequentialCalled') === 'true';
     
     // 前回selectSequentialが呼ばれていた場合、NEXTボタンにフォーカスを当てる
-    if (wasSelectSequentialCalled && nextButtonRef.current) {
-      nextButtonRef.current.focus();
+    if (wasSelectSequentialCalled) {
+      // 現在チェックされている問題を取得
+      const checkedIndices = labels
+        .map((v, i) => v.checked ? i : -1)
+        .filter(idx => idx !== -1);
+    
+      // 最初（インデックス0）と最後（labels.length - 1）の問題がチェックされているかチェック
+      if (checkedIndices.includes(0) && checkedIndices.includes(labels.length - 1)) {
+        // 最初と最後の問題がチェックされている場合、チェックをクリアして終了
+        setLabels(labels.map((v) => { return { ...v, checked: false }; }));
+      } else {
+        // すべてを一度リセット
+        const resetLabels = labels.map((v) => {
+          return { ...v, checked: false };
+        });
+    
+        // 選択するインデックスを格納する配列
+        const selectedIndices: number[] = [];
+    
+        if (checkedIndices.length > 0) {
+          // チェックされている問題のうち最も最後のものを取得
+          const lastCheckedIdx = Math.max(...checkedIndices);
+      
+          // 次のインデックスを計算（最後のインデックスの次）
+          const nextIdx = (lastCheckedIdx + 1) % labels.length;
+      
+          // 選択するインデックスを追加
+          selectedIndices.push(lastCheckedIdx);
+          selectedIndices.push(nextIdx);
+        } else {
+          // チェックされている問題がない場合は最初の2つを選択
+          if (labels.length >= 2) {
+            selectedIndices.push(0);
+            selectedIndices.push(1);
+          } else if (labels.length === 1) {
+            // 問題が1つしかない場合は同じ問題を2回選択
+            selectedIndices.push(0);
+            selectedIndices.push(0);
+          }
+        }
+    
+        // 選択したインデックスのチェックをtrueに設定
+        const newLabels = resetLabels.map((v, i) => {
+          if (selectedIndices.includes(i)) {
+            return { ...v, checked: true };
+          }
+          return v;
+        });
+    
+        // ラベルを更新
+        setLabels(newLabels);
+
+        if (nextButtonRef.current) {
+          nextButtonRef.current.focus();
+        }
+      }
       // フラグをリセット
       localStorage.removeItem('wasSelectSequentialCalled');
     }
@@ -154,66 +208,22 @@ export const Home = ({
 
   const selectSequential = () => {
     // 現在チェックされている問題を取得
-    const checkedIndices = labels
+    const selectedSections = labels
       .map((v, i) => v.checked ? i : -1)
       .filter(idx => idx !== -1);
-    
-    // 最初（インデックス0）と最後（labels.length - 1）の問題がチェックされているかチェック
-    if (checkedIndices.includes(0) && checkedIndices.includes(labels.length - 1)) {
-      // 最初と最後の問題がチェックされている場合、チェックをクリアして終了
-      setLabels(
-        labels.map((v) => {
-          return { ...v, checked: false };
-        })
-      );
-      return; // start関数を呼ばずに終了
-    }
-    
-    // すべてを一度リセット
-    const resetLabels = labels.map((v) => {
-      return { ...v, checked: false };
-    });
-    
-    // 選択するインデックスを格納する配列
-    const selectedIndices: number[] = [];
-    
-    if (checkedIndices.length > 0) {
-      // チェックされている問題のうち最も最後のものを取得
-      const lastCheckedIdx = Math.max(...checkedIndices);
-      
-      // 次のインデックスを計算（最後のインデックスの次）
-      const nextIdx = (lastCheckedIdx + 1) % labels.length;
-      
-      // 選択するインデックスを追加
-      selectedIndices.push(lastCheckedIdx);
-      selectedIndices.push(nextIdx);
-    } else {
-      // チェックされている問題がない場合は最初の2つを選択
-      if (labels.length >= 2) {
-        selectedIndices.push(0);
-        selectedIndices.push(1);
-      } else if (labels.length === 1) {
-        // 問題が1つしかない場合は同じ問題を2回選択
-        selectedIndices.push(0);
-        selectedIndices.push(0);
-      }
-    }
-    
-    // 選択したインデックスのチェックをtrueに設定
-    const newLabels = resetLabels.map((v, i) => {
-      if (selectedIndices.includes(i)) {
-        return { ...v, checked: true };
-      }
-      return v;
-    });
-    
-    // ラベルを更新
-    setLabels(newLabels);
-    
+
     // selectSequentialが呼ばれたことをローカルストレージに記録
     localStorage.setItem('wasSelectSequentialCalled', 'true');
     
-    start(selectQuestions(selectedIndices));
+    if (selectedSections.length === 0) {
+      if (labels.length >= 2) {
+        selectedSections.push(0, 1);
+      } else {
+        selectedSections.push(0);
+      }
+    }
+
+    start(selectQuestions(selectedSections));
   };
   
   return (
