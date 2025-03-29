@@ -174,7 +174,12 @@ export const Home = ({
       return v;
     });
     
+    // ラベルを更新
     setLabels(newLabels);
+    
+    // 選択されたセクションを直接計算して開始
+    const selectedSections = selectedIndices;
+    start(selectQuestions(selectedSections));
   };
 
   // 選択された単語の状態
@@ -228,7 +233,6 @@ export const Home = ({
           <Button onClick={resetWrongQuestionHistory}>RESET</Button>
         </div>
       </div>
-      <DropQuestions onLoad={updateLabels} />
       
       {/* 2回以上間違えた単語がある場合のみ表示 */}
       {repeatedWrongWordsWithQuestions.length > 0 && (
@@ -287,6 +291,8 @@ export const Home = ({
           )}
         </div>
       )}
+      
+      <DropQuestions onLoad={updateLabels} />
     </>
   );
 };
