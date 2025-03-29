@@ -24,6 +24,11 @@ export const App = () => {
   const [isCorrect, setIsCorrect] = React.useState<boolean[]>([]);
   // 間違えた問題の履歴を保存する状態
   const [wrongQuestionHistory, setWrongQuestionHistory] = React.useState<WrongQuestionHistory[]>([]);
+  
+  // 間違えた問題の履歴をリセットする関数
+  const resetWrongQuestionHistory = () => {
+    setWrongQuestionHistory([]);
+  };
   const navigate = useNavigate();
 
   const start = (newQuestions: QuestionData[]) => {
@@ -97,7 +102,7 @@ export const App = () => {
       />
       <hr></hr>
       <Routes>
-        <Route path="/" element={<Home start={start} wrongQuestionHistory={wrongQuestionHistory} />} />
+        <Route path="/" element={<Home start={start} wrongQuestionHistory={wrongQuestionHistory} resetWrongQuestionHistory={resetWrongQuestionHistory} />} />
         <Route
           path="/question"
           element={
