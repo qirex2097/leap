@@ -118,11 +118,20 @@ export const Home = ({
     );
   };
 
+  const selectAll = () => {
+    setLabels(
+      labels.map((v) => {
+        return { ...v, checked: true };
+      })
+    );
+  };
+
   return (
     <>
       <QuestionList labels={newLabels} handleChange={handleChange} yoko={window.innerWidth > 750 ? 8 : 4}/>
       <Button onClick={questionStart}>START</Button>
       <Button onClick={reset}>RESET</Button>
+      <Button onClick={selectAll}>ALL</Button>
       <DropQuestions onLoad={updateLabels} />
       
     </>
