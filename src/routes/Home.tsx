@@ -110,23 +110,25 @@ export const Home = ({
 
   useEffect(() => {
     const wasSelectSequentialCalled =
-      sessionStorage.getItem("wasSelectSequentialCalled") === "true";
+      sessionStorage.getItem("wasSelectSequentialCalled") === "true" || false;
     if (!wasSelectSequentialCalled) return;
 
     const checkedIndices = getCheckedIndices(labels);
 
     if (checkedIndices.length === 0) return;
 
-    if (checkedIndices.includes(0) && checkedIndices.includes(labels.length - 1)) {
+    if (labels.length > 0 && checkedIndices.includes(0) && checkedIndices.includes(labels.length - 1)) {
       setLabels(resetLabels(labels));
     } else {
       const lastCheckedIdx = Math.max(...checkedIndices);
       setLabels(updateSequentialLabels(labels, lastCheckedIdx));
-      nextButtonRef.current?.focus();
+      if (!nextButtonRef.current?.contains(document.activeElement)) {
+        nextButtonRef.current?.focus();
+      }
     }
 
     sessionStorage.removeItem("wasSelectSequentialCalled");
-  }, [labels]);
+  }, [labels]); // labelsを依存関係に追加
 
   const questionStart = () => {
     const selectedSections = getCheckedIndices(labels);
@@ -166,18 +168,27 @@ export const Home = ({
     start(selectQuestions(selectedSections));
   };
 
+  const allLabelsSelected = areAllLabelsSelected(labels);
+
+  const buttonContainerStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+  };
+
+  const yoko = window.innerWidth > 750 ? 8 : 4;
+
   return (
     <>
       <QuestionList
         labels={labels}
         handleChange={handleChange}
-        yoko={window.innerWidth > 750 ? 8 : 4}
+        yoko={yoko}
       />
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div style={buttonContainerStyle}>
         <div>
           <Button onClick={questionStart}>START</Button>
           <Button onClick={resetOrSelectAll}>
-            {labels.every((v) => v.checked) ? "RESET" : "ALL"}
+            {allLabelsSelected ? "RESET" : "ALL"}
           </Button>
           <Button onClick={selectSequential} ref={nextButtonRef}>
             NEXT
