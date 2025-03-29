@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
@@ -69,6 +69,9 @@ export const Home = ({
   wrongQuestionHistory: WrongQuestionHistory[];
   resetWrongQuestionHistory: () => void;
 }): JSX.Element => {
+  // NEXTボタンへの参照を作成
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+
   const [labels, setLabels] = React.useState<Label[]>(
     getCurrentSectionData().map((v, i) => {
       const filename = v.filename || "no name";
@@ -81,6 +84,19 @@ export const Home = ({
     })
   );
   let newLabels = [...labels];
+
+  // コンポーネントがマウントされたときに実行
+  useEffect(() => {
+    // ローカルストレージから前回selectSequentialが呼ばれたかどうかを確認
+    const wasSelectSequentialCalled = localStorage.getItem('wasSelectSequentialCalled') === 'true';
+    
+    // 前回selectSequentialが呼ばれていた場合、NEXTボタンにフォーカスを当てる
+    if (wasSelectSequentialCalled && nextButtonRef.current) {
+      nextButtonRef.current.focus();
+      // フラグをリセット
+      localStorage.removeItem('wasSelectSequentialCalled');
+    }
+  }, []);
 
   const questionStart = () => {
     const selectedSections: number[] = labels
@@ -194,9 +210,10 @@ export const Home = ({
     // ラベルを更新
     setLabels(newLabels);
     
-    // 選択されたセクションを直接計算して開始
-    const selectedSections = selectedIndices;
-    start(selectQuestions(selectedSections));
+    // selectSequentialが呼ばれたことをローカルストレージに記録
+    localStorage.setItem('wasSelectSequentialCalled', 'true');
+    
+    start(selectQuestions(selectedIndices));
   };
   
   return (
@@ -208,7 +225,10 @@ export const Home = ({
           <Button onClick={resetOrSelectAll}>
             {labels.every((v) => v.checked) ? "RESET" : "ALL"}
           </Button>
-          <Button onClick={selectSequential} >
+          <Button 
+            onClick={selectSequential} 
+            ref={nextButtonRef}
+          >
             NEXT
           </Button>
         </div>
