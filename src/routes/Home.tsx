@@ -110,19 +110,65 @@ export const Home = ({
     setLabels(newLabels);
   };
 
-  const reset = () => {
-    setLabels(
-      labels.map((v) => {
-        return { ...v, checked: false };
-      })
-    );
+  const resetOrSelectAll = () => {
+    // すべてが選択されているかチェック
+    const allSelected = labels.every((v) => v.checked);
+    
+    if (allSelected) {
+      // すべて選択されている場合はリセット
+      setLabels(
+        labels.map((v) => {
+          return { ...v, checked: false };
+        })
+      );
+    } else {
+      // 一つでも未選択があればすべて選択
+      setLabels(
+        labels.map((v) => {
+          return { ...v, checked: true };
+        })
+      );
+    }
+  };
+
+  const selectRandom = () => {
+    // すべてを一度リセット
+    const resetLabels = labels.map((v) => {
+      return { ...v, checked: false };
+    });
+    
+    // ランダムに2つ選択
+    const availableIndices = labels.map((_, i) => i);
+    const selectedIndices: number[] = [];
+    
+    // 2つ選択するか、利用可能な数が2未満の場合はすべて選択
+    const selectCount = Math.min(2, availableIndices.length);
+    
+    for (let i = 0; i < selectCount; i++) {
+      const randomIndex = Math.floor(Math.random() * availableIndices.length);
+      const selectedIdx = availableIndices.splice(randomIndex, 1)[0];
+      selectedIndices.push(selectedIdx);
+    }
+    
+    // 選択したインデックスのチェックをtrueに設定
+    const newLabels = resetLabels.map((v, i) => {
+      if (selectedIndices.includes(i)) {
+        return { ...v, checked: true };
+      }
+      return v;
+    });
+    
+    setLabels(newLabels);
   };
 
   return (
     <>
       <QuestionList labels={newLabels} handleChange={handleChange} yoko={window.innerWidth > 750 ? 8 : 4}/>
       <Button onClick={questionStart}>START</Button>
-      <Button onClick={reset}>RESET</Button>
+      <Button onClick={resetOrSelectAll}>
+        {labels.every((v) => v.checked) ? "RESET" : "ALL"}
+      </Button>
+      <Button onClick={selectRandom}>RANDOM</Button>
       <DropQuestions onLoad={updateLabels} />
       
     </>

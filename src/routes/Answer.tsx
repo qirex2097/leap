@@ -12,15 +12,14 @@ export const Answers = ({
       {wrongQuestions.map((v, i) => {
         const token: string[] = divideQuestion(v);
         const questionLine = token.map((e, i) => {
-          if (i % 2 === 0) {
-            return <span key={i}>{e}</span>;
-          } else {
-            return (
-              <span key={i} style={{ borderBottom: "solid 3px red" }}>
-                {e}
-              </span>
-            );
-          }
+          return (
+            <span key={i} style={{ 
+              fontWeight: i % 2 === 1 ? 'bold' : 'normal',
+              backgroundColor: i % 2 === 1 ? '#ffeeee' : 'transparent'
+            }}>
+              {e}
+            </span>
+          );
         });
 
         return (
