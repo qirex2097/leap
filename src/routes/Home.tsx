@@ -158,11 +158,8 @@ export const Home = ({
     sessionStorage.setItem("wasSelectSequentialCalled", "true");
 
     if (selectedSections.length === 0) {
-      if (labels.length >= 2) {
-        selectedSections.push(0, 1);
-      } else {
-        selectedSections.push(0);
-      }
+      const defaultSections = labels.length >= 2 ? [0, 1] : [0];
+      selectedSections.push(...defaultSections);
     }
 
     start(selectQuestions(selectedSections));
