@@ -7,6 +7,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   QuestionData,
@@ -14,10 +15,13 @@ import {
   getCurrentSectionData,
   selectQuestions,
   getSelectedSections,
+  getAnswers,
+  divideQuestion,
 } from "../questions";
 import { DropQuestions } from "../components/DropQuestions";
 import { WrongQuestionHistory } from "../components/App";
 import { ShowQuestions } from "../components/ShowQuestions";
+import { ShowWrongWords } from "../components/ShowWrongWords";
 
 type Label = {
   label: string;
@@ -62,9 +66,11 @@ const QuestionList = ({
 export const Home = ({
   start,
   wrongQuestionHistory,
+  resetWrongQuestionHistory,
 }: {
   start: (newQuestionData: QuestionData[]) => void;
   wrongQuestionHistory: WrongQuestionHistory[];
+  resetWrongQuestionHistory: () => void;
 }): JSX.Element => {
   const [labels, setLabels] = React.useState<Label[]>(
     getCurrentSectionData().map((v, i) => {
@@ -131,6 +137,16 @@ export const Home = ({
     }
   };
 
+  const resetAll = () => {
+    // すべての選択をリセット
+    setLabels(
+      labels.map((v) => {
+        return { ...v, checked: false };
+      })
+    );
+  };
+
+
   const selectRandom = () => {
     // すべてを一度リセット
     const resetLabels = labels.map((v) => {
@@ -161,16 +177,107 @@ export const Home = ({
     setLabels(newLabels);
   };
 
+  // 選択された単語の状態
+  const [selectedWordIndex, setSelectedWordIndex] = React.useState<number | null>(null);
+
+  // すべての履歴から間違えた問題を抽出し、問題ごとに単語を結合
+  const wrongWordsWithQuestions = wrongQuestionHistory.flatMap(history => 
+    history.wrongQuestions.map(question => {
+      // 同じ問題から抽出された単語を空白で結合
+      return {
+        combinedWord: getAnswers(question).join(' '),
+        question: question
+      };
+    })
+  );
+  
+  // 重複する単語を削除（同じ結合単語を持つ最初の問題のみ残す）
+  const uniqueWrongWordsWithQuestions = wrongWordsWithQuestions.reduce((acc, current) => {
+    if (!acc.some(item => item.combinedWord === current.combinedWord)) {
+      acc.push(current);
+    }
+    return acc;
+  }, [] as { combinedWord: string, question: QuestionData }[]);
+  
+  // 単語をクリックした時のハンドラ
+  const handleWordClick = (index: number) => {
+    setSelectedWordIndex(index === selectedWordIndex ? null : index);
+  };
+  
   return (
     <>
       <QuestionList labels={newLabels} handleChange={handleChange} yoko={window.innerWidth > 750 ? 8 : 4}/>
-      <Button onClick={questionStart}>START</Button>
-      <Button onClick={resetOrSelectAll}>
-        {labels.every((v) => v.checked) ? "RESET" : "ALL"}
-      </Button>
-      <Button onClick={selectRandom}>RANDOM</Button>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+          <Button onClick={questionStart}>START</Button>
+          <Button onClick={resetOrSelectAll}>
+            {labels.every((v) => v.checked) ? "RESET" : "ALL"}
+          </Button>
+          <Button onClick={selectRandom}>RANDOM</Button>
+        </div>
+        <div>
+          <Button onClick={resetWrongQuestionHistory}>RESET</Button>
+        </div>
+      </div>
       <DropQuestions onLoad={updateLabels} />
       
+      {/* 間違えた単語がある場合のみ表示 */}
+      {uniqueWrongWordsWithQuestions.length > 0 && (
+        <div style={{ marginTop: 2 }}>
+          <Typography variant="h6" component="h3" gutterBottom>
+            間違えた単語一覧
+          </Typography>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {uniqueWrongWordsWithQuestions.map((item, index) => (
+              <Chip
+                key={index}
+                label={item.combinedWord}
+                color="error"
+                variant="outlined"
+                sx={{ margin: '4px' }}
+                onClick={() => handleWordClick(index)}
+                clickable
+              />
+            ))}
+          </div>
+          
+          {/* 選択された単語の問題と英文を表示 */}
+          {selectedWordIndex !== null && (
+            <div 
+              style={{ 
+                marginTop: '16px', 
+                padding: '12px', 
+                backgroundColor: 'rgba(255, 235, 235, 0.3)',
+                border: '1px solid rgba(255, 0, 0, 0.1)',
+                borderRadius: '4px'
+              }}
+            >
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {uniqueWrongWordsWithQuestions[selectedWordIndex].question.sectionName}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                {uniqueWrongWordsWithQuestions[selectedWordIndex].question.Japanese}
+              </Typography>
+              <div>
+                {divideQuestion(uniqueWrongWordsWithQuestions[selectedWordIndex].question).map((part: string, partIndex: number) => (
+                  <span 
+                    key={partIndex} 
+                    style={{ 
+                      fontWeight: partIndex % 2 === 1 ? 'bold' : 'normal',
+                      color: partIndex % 2 === 1 ? '#d32f2f' : 'inherit',
+                      backgroundColor: partIndex % 2 === 1 ? 'rgba(255, 235, 235, 0.5)' : 'transparent',
+                      padding: partIndex % 2 === 1 ? '0 2px' : '0',
+                      borderRadius: partIndex % 2 === 1 ? '2px' : '0'
+                    }}
+                  >
+                    {part}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 };
