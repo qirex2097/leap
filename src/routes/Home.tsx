@@ -116,12 +116,20 @@ export const Home = ({
     const checkedIndices = getCheckedIndices(labels);
 
     if (checkedIndices.length === 0) return;
+    
+    const currentLabelsState = JSON.stringify(labels);
 
     if (labels.length > 0 && checkedIndices.includes(0) && checkedIndices.includes(labels.length - 1)) {
-      setLabels(resetLabels(labels));
+      const resetLabelsResuilt = resetLabels(labels);
+      if (JSON.stringify(resetLabelsResuilt) !== currentLabelsState) {
+        setLabels(resetLabelsResuilt);
+      }  
     } else {
       const lastCheckedIdx = Math.max(...checkedIndices);
-      setLabels(updateSequentialLabels(labels, lastCheckedIdx));
+      const updatedLabelsResult = updateSequentialLabels(labels, lastCheckedIdx);
+      if (JSON.stringify(updatedLabelsResult) !== currentLabelsState) {
+        setLabels(updatedLabelsResult);
+      }
       if (!nextButtonRef.current?.contains(document.activeElement)) {
         nextButtonRef.current?.focus();
       }

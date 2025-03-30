@@ -9,43 +9,48 @@ export interface ShowWrongWordsProps {
   wrongQuestionHistory: WrongQuestionHistory[];
 }
 
+// 間違えた単語を抽出する関数
+const extractAllWrongWords = (wrongQuestionHistory: WrongQuestionHistory[]) => {
+  return wrongQuestionHistory.flatMap(history =>
+    history.wrongQuestions.map(question => ({
+      combinedWord: getAnswers(question).join(' '),
+      question: question,
+    }))
+  );
+};
+
+// 2回以上間違えた単語をフィルタリングする関数
+const filterRepeatedWrongWords = (
+  allWrongWords: { combinedWord: string; question: QuestionData }[],
+  wordCounts: Record<string, number>
+) => {
+  return allWrongWords.reduce((acc, current) => {
+    const { combinedWord } = current;
+    if (wordCounts[combinedWord] >= 2 && !acc.some(item => item.combinedWord === combinedWord)) {
+      acc.push(current);
+    }
+    return acc;
+  }, [] as { combinedWord: string; question: QuestionData }[]);
+};
+
 export const ShowWrongWords: React.FC<ShowWrongWordsProps> = ({
   wrongQuestionHistory,
 }) => {
-  // 選択された単語のインデックスを保持するstate
   const [selectedWordIndex, setSelectedWordIndex] = React.useState<number | null>(null);
 
-  // すべての履歴から間違えた単語を抽出
-  const allWrongWords = wrongQuestionHistory.flatMap(history => 
-    history.wrongQuestions.map(question => {
-      // 同じ問題から抽出された単語を空白で結合
-      return {
-        combinedWord: getAnswers(question).join(' '),
-        question: question
-      };
-    })
-  );
-  
-  // 単語の出現回数をカウント
+  const allWrongWords = extractAllWrongWords(wrongQuestionHistory);
+
   const wordCounts = allWrongWords.reduce((counts, item) => {
     const { combinedWord } = item;
     counts[combinedWord] = (counts[combinedWord] || 0) + 1;
     return counts;
   }, {} as Record<string, number>);
-  
-  // 2回以上間違えた単語のみをフィルタリング
-  const repeatedWrongWordsWithQuestions = allWrongWords.reduce((acc, current) => {
-    const { combinedWord } = current;
-    // 2回以上出現し、まだ追加されていない単語のみを追加
-    if (wordCounts[combinedWord] >= 2 && !acc.some(item => item.combinedWord === combinedWord)) {
-      acc.push(current);
-    }
-    return acc;
-  }, [] as { combinedWord: string, question: QuestionData }[]);
-  
+
+  const repeatedWrongWordsWithQuestions = filterRepeatedWrongWords(allWrongWords, wordCounts);
+
   // 単語をクリックした時のハンドラ
   const handleWordClick = (index: number) => {
-    setSelectedWordIndex(index === selectedWordIndex ? null : index);
+    setSelectedWordIndex(prevIndex => (prevIndex === index ? null : index));
   };
 
   // 表示する単語がない場合は何も表示しない
