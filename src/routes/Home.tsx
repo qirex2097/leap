@@ -33,15 +33,17 @@ type Label = {
   idx: number;
 };
 
-const QuestionList = ({
+type QuestionListProps = {
+  labels: Label[];
+  handleChange: (idx: number, checked: boolean) => void;
+  yoko: number;
+};
+
+const QuestionList: React.FC<QuestionListProps> = ({
   labels,
   handleChange,
   yoko,
-}: {
-  labels: Label[]
-  handleChange: (idx: number, checked: boolean) => void
-  yoko: number
-}): JSX.Element => {
+}) => {
   return (
       <details open>
         <summary></summary>
@@ -66,6 +68,44 @@ const QuestionList = ({
   );
 };
 
+const buttonContainerStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+};
+
+type ActionButtonsProps = {
+  onStart: () => void;
+  onResetOrSelectAll: () => void;
+  onSelectSequential: () => void;
+  onResetHistory: () => void;
+  allSelected: boolean;
+  nextButtonRef: React.RefObject<HTMLButtonElement>;
+};
+
+const ActionButtons: React.FC<ActionButtonsProps> = ({ 
+  onStart,
+  onResetOrSelectAll,
+  onSelectSequential,
+  onResetHistory,
+  allSelected,
+  nextButtonRef
+}) => (
+  <div style={buttonContainerStyle}>
+    <div>
+      <Button onClick={onStart}>START</Button>
+      <Button onClick={onResetOrSelectAll}>
+        {allSelected ? "RESET" : "ALL"}
+      </Button>
+      <Button onClick={onSelectSequential} ref={nextButtonRef}>
+        NEXT
+      </Button>
+    </div>
+    <div>
+      <Button onClick={onResetHistory}>RESET</Button>
+    </div>
+  </div>
+);
+ 
 // チェックされたインデックスを取得するユーティリティ関数
 const getCheckedIndices = (labels: Label[]): number[] => {
   return labels
@@ -186,34 +226,23 @@ export const Home = ({
 
   const allLabelsSelected = areAllLabelsSelected(labels);
 
-  const buttonContainerStyle = {
-    display: "flex",
-    justifyContent: "space-between",
-  };
-
   const yoko = window.innerWidth > 750 ? 8 : 4;
-
-  return (
+ 
+ return (
     <>
       <QuestionList
         labels={labels}
         handleChange={handleChange}
         yoko={yoko}
       />
-      <div style={buttonContainerStyle}>
-        <div>
-          <Button onClick={questionStart}>START</Button>
-          <Button onClick={resetOrSelectAll}>
-            {allLabelsSelected ? "RESET" : "ALL"}
-          </Button>
-          <Button onClick={selectSequential} ref={nextButtonRef}>
-            NEXT
-          </Button>
-        </div>
-        <div>
-          <Button onClick={resetWrongQuestionHistory}>RESET</Button>
-        </div>
-      </div>
+      <ActionButtons 
+        onStart={questionStart}
+        onResetOrSelectAll={resetOrSelectAll}
+        onSelectSequential={selectSequential}
+        onResetHistory={resetWrongQuestionHistory}
+        allSelected={allLabelsSelected}
+        nextButtonRef={nextButtonRef}
+      />        
       <ShowWrongWords wrongQuestionHistory={wrongQuestionHistory} />
       <DropQuestions onLoad={updateLabels} />
     </>
