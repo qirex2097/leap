@@ -14,6 +14,18 @@ import { DropQuestions } from "../components/DropQuestions";
 import { WrongQuestionHistory } from "../components/App";
 import { ShowWrongWords } from "../components/ShowWrongWords";
 
+// Session storage utility functions
+const SESSION_KEY_SELECT_SEQUENTIAL = "wasSelectSequentialCalled";
+const setSelectSequentialCalled = (value: boolean) => {
+  sessionStorage.setItem(SESSION_KEY_SELECT_SEQUENTIAL, value.toString());
+};
+const wasSelectSequentialCalled = () => {
+  return sessionStorage.getItem(SESSION_KEY_SELECT_SEQUENTIAL) === "true";
+};
+const clearSelectSequentialCalled = () => {
+  sessionStorage.removeItem(SESSION_KEY_SELECT_SEQUENTIAL);
+};
+
 type Label = {
   label: string;
   checked: boolean;
@@ -109,9 +121,8 @@ export const Home = ({
   });
 
   useEffect(() => {
-    const wasSelectSequentialCalled =
-      sessionStorage.getItem("wasSelectSequentialCalled") === "true" || false;
-    if (!wasSelectSequentialCalled) return;
+    const wasSequentialCalled = wasSelectSequentialCalled();
+    if (!wasSequentialCalled) return;
 
     const checkedIndices = getCheckedIndices(labels);
 
@@ -135,7 +146,7 @@ export const Home = ({
       }
     }
 
-    sessionStorage.removeItem("wasSelectSequentialCalled");
+    clearSelectSequentialCalled();
   }, [labels]); // labelsを依存関係に追加
 
   const questionStart = () => {
@@ -163,7 +174,7 @@ export const Home = ({
 
   const selectSequential = () => {
     const selectedSections = getCheckedIndices(labels);
-    sessionStorage.setItem("wasSelectSequentialCalled", "true");
+    setSelectSequentialCalled(true);
 
     if (selectedSections.length === 0) {
       const defaultSections = labels.length >= 2 ? [0, 1] : [0];
