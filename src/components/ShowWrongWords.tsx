@@ -4,6 +4,22 @@ import Chip from "@mui/material/Chip";
 import { QuestionData, divideQuestion, getAnswers } from "../questions";
 import { WrongQuestionHistory } from "./App";
 
+const WordDetailsContainerStyle = {
+  marginTop: '16px',
+  padding: '12px',
+  backgroundColor: 'rgba(255, 235, 235, 0.3)',
+  border: '1px solid rgba(255, 0, 0, 0.1)',
+  borderRadius: '4px',
+};
+
+const getPartStyle = (isHighlighted: boolean) => ({
+  fontWeight: isHighlighted ? 'bold' : 'normal',
+  color: isHighlighted ? '#d32f2f' : 'inherit',
+  backgroundColor: isHighlighted ? 'rgba(255, 235, 235, 0.5)' : 'transparent',
+  padding: isHighlighted ? '0 2px' : '0',
+  borderRadius: isHighlighted ? '2px' : '0',
+});
+  
 // ShowWrongWordsコンポーネントのプロパティの型定義
 export interface ShowWrongWordsProps {
   wrongQuestionHistory: WrongQuestionHistory[];
@@ -58,15 +74,7 @@ const WordList: React.FC<{
 const WordDetails: React.FC<{
   word: { combinedWord: string; question: QuestionData };
 }> = ({ word }) => (
-  <div
-    style={{
-      marginTop: '16px',
-      padding: '12px',
-      backgroundColor: 'rgba(255, 235, 235, 0.3)',
-      border: '1px solid rgba(255, 0, 0, 0.1)',
-      borderRadius: '4px',
-    }}
-  >
+  <div style={WordDetailsContainerStyle}>
     <Typography variant="body2" color="text.secondary" gutterBottom>
       {word.question.sectionName}
     </Typography>
@@ -75,16 +83,7 @@ const WordDetails: React.FC<{
     </Typography>
     <div>
       {divideQuestion(word.question).map((part: string, partIndex: number) => (
-        <span
-          key={partIndex}
-          style={{
-            fontWeight: partIndex % 2 === 1 ? 'bold' : 'normal',
-            color: partIndex % 2 === 1 ? '#d32f2f' : 'inherit',
-            backgroundColor: partIndex % 2 === 1 ? 'rgba(255, 235, 235, 0.5)' : 'transparent',
-            padding: partIndex % 2 === 1 ? '0 2px' : '0',
-            borderRadius: partIndex % 2 === 1 ? '2px' : '0',
-          }}
-        >
+        <span key={partIndex} style={getPartStyle(partIndex % 2 === 1)} >
           {part}
         </span>
       ))}
