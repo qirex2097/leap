@@ -27,6 +27,9 @@ export interface ShowWrongWordsProps {
 
 // 間違えた単語を抽出する関数
 const extractAllWrongWords = (wrongQuestionHistory: WrongQuestionHistory[]) => {
+  if (!wrongQuestionHistory) {
+    return [];
+  }
   return wrongQuestionHistory.flatMap(history =>
     history.wrongQuestions.map(question => ({
       combinedWord: getAnswers(question).join(' '),

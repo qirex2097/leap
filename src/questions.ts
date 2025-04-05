@@ -50,7 +50,7 @@ export const getAnswers = (question: QuestionData): string[] => {
 const searchAnswersFromQuestion = (
   buff: string
 ): { question: string; answerPosition: number[][] } => {
-  let question: string = buff.replace(/>>+|<<+/g, "");
+  let question: string = buff.replace(/>>+|<<+|\*\*+/g, "");
   let answerPosition: number[][] = [];
 
   let y = 0;
