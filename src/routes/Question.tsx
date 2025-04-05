@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import Button from "@mui/material/Button";
 import { QuestionData, divideQuestion, getAnswers } from "../questions";
+import JapaneseText from "../components/JapaneseText";
 
 const enum ANSWER_RESULT {
   HINT = -2,
@@ -176,7 +177,7 @@ const QuestionLine = ({
 
   return (
     <>
-      <div>{question.Japanese}</div>
+      <JapaneseText text={question.Japanese} />
       <div>{questionLines}</div>
       <p></p>
     </>

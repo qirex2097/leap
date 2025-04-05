@@ -1,4 +1,3 @@
-import { text } from 'stream/consumers';
 import { __local__, QuestionData, divideQuestion } from '../questions'
 
 const data: string[] = [
@@ -32,11 +31,17 @@ const data: string[] = [
 "",
 "You are expected to adapt to changes in social >>norms.<<",/* 7 */
 "社会規範の変化に順応することが求められている。",
+"",
+"Singapore has started the world's first public **trial** of the robo-taxi service.",/* 6 */
+"シンガポールはロボットタクシー運行業務の世界初の公開試験を始めた。",
+"",
+"You are expected to adapt to changes in social **norms.**",/* 8 */
+"社会規範の変化に順応することが求められている。",
 ];
 
 test('getParagraphs', () => {
     const paragraphs = __local__.getParagraphs(data);
-    expect(paragraphs.length).toBe(8);
+    expect(paragraphs.length).toBe(10);
     expect(paragraphs[0].split('\n').length).toBe(3);
     expect(paragraphs[1].split('\n').length).toBe(3);
     expect(paragraphs[2].split('\n').length).toBe(3);
@@ -45,6 +50,8 @@ test('getParagraphs', () => {
     expect(paragraphs[5].split('\n').length).toBe(3);
     expect(paragraphs[6].split('\n').length).toBe(2);
     expect(paragraphs[7].split('\n').length).toBe(2);
+    expect(paragraphs[8].split('\n').length).toBe(2);
+    expect(paragraphs[9].split('\n').length).toBe(2);
 })
 
 test('searchAnswersFromQuestion', () => {

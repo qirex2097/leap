@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from "@mui/material/Button";
 import { QuestionData, divideQuestion } from "../questions";
+import JapaneseText from "../components/JapaneseText";
 
 export const Answers = ({
   wrongQuestions,
@@ -25,7 +26,7 @@ export const Answers = ({
         return (
           <div key={i}>
             <div>
-              {v.Japanese} / {v.sectionName}
+              <JapaneseText text={`${v.Japanese} / ${v.sectionName}`} />
             </div>
             <div>{questionLine}</div>
             <p></p>
