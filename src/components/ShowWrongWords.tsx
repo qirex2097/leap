@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 import { QuestionData, divideQuestion, getAnswers } from "../questions";
 import { WrongQuestionHistory } from "./App";
+import JapaneseText from "../components/JapaneseText";
 
 const WordDetailsContainerStyle = {
   marginTop: '16px',
@@ -82,7 +83,7 @@ const WordDetails: React.FC<{
       {word.question.sectionName}
     </Typography>
     <Typography variant="body1" gutterBottom>
-      {word.question.Japanese}
+      <JapaneseText text={word.question.Japanese} />
     </Typography>
     <div>
       {divideQuestion(word.question).map((part: string, partIndex: number) => (
