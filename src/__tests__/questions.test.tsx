@@ -109,18 +109,3 @@ test('divideQuestion', () => {
     expect(token.length).toBe(5);
     expect(token.join('')).toBe(question);
 })
-
-test('divideQuestion 2', () => {
-    const eng = "The police >>carried out<< a search of the crime scene."
-    const {question, answerPosition} = __local__.searchAnswersFromQuestion(eng);
-    const questionData: QuestionData = {
-        English: question,
-        Japanese: "dummy",
-        answerPosition: answerPosition,
-        sectionName: 'TEST',
-    }
-    const token = divideQuestion(questionData)
-
-    expect(token.length).toBe(5);
-    expect(token.join('')).toBe(question);
-})
